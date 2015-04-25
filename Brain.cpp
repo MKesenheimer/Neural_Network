@@ -17,6 +17,8 @@ Brain::Brain(int nneur, int ninp, int noutp){
   connections = "";
 }
 
+//if you want to change the design of the network, you should only do changes
+//in this function
 void Brain::initBrain(){
   int identifier = 0;
   
@@ -486,8 +488,16 @@ int Brain::nameToInt(std::string name){
   return a;
 }
 
-void Brain::train(const std::vector<float>& input, const std::vector<float>& output){
+int Brain::numberOfInputs() {
+  return ninputs;
+}
 
+int Brain::numberOfOutputs() {
+  return noutputs;
+}
+
+int Brain::numberOfNeurons() {
+  return nneurons;
 }
 
 Brain::~Brain() {

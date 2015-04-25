@@ -9,7 +9,7 @@ COMPILER = g++
 FLAGS   = -g
 LDFLAGS =
 PREPRO  = 
-DEBUG   = -D DEBUG
+#DEBUG   = -D DEBUG
 OPT     = -O2
 WARN    =
 
@@ -47,7 +47,7 @@ FRM =
 ## Linker files
 
 ### USER Files ###
-USER = Main.o Neuron.o Brain.o helper.o
+USER = Main.o Neuron.o Brain.o Trainer.o helper.o
 
 
 ########################################################################

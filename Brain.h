@@ -24,6 +24,10 @@ class Brain {
       //train the brain (set input and desired output)
       void train(const std::vector<float>& input, const std::vector<float>& output);
       
+      int numberOfInputs();
+      int numberOfOutputs();
+      int numberOfNeurons();
+      
       
   private:
       int nneurons;

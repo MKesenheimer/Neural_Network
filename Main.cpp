@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "Brain.h"
+#include "Trainer.h"
 #include "helper.h"
 
 using namespace::std;
@@ -16,8 +17,11 @@ int main()
   int ninputs = 3;
   int noutputs = 1;
   
-  Brain jarvis(nneurons,ninputs,noutputs);
-  jarvis.initBrain();
+  Brain Jarvis(nneurons,ninputs,noutputs);
+  Jarvis.initBrain();
+  
+  Trainer TonyStark;
+  TonyStark.train(&Jarvis);
   
   vector<float> input;
   for (int i=0; i<ninputs; i++) {
@@ -30,7 +34,7 @@ int main()
 
   //calculate the output
   vector<float> output;
-  output = jarvis.output(input);
+  output = Jarvis.output(input);
   
   #ifdef DEBUG
     cout << "Output size: "<< output.size() << "\n";
