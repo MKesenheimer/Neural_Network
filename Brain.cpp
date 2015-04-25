@@ -22,19 +22,19 @@ void Brain::initBrain(){
   
   //Fill inputLayer with neurons
   for (int i=0; i<ninputs; i++) {
-    inputLayer.push_back( Neuron(identifier,1,3) );
+    inputLayer.push_back( Neuron(identifier,1,nneurons) );
     identifier++;
   }
   
   //Fill brain with active neurons
   for (int i=0; i<nneurons; i++) {
-    neuron.push_back( Neuron(identifier,4,2) );
+    neuron.push_back( Neuron(identifier,ninputs,noutputs) );
     identifier++;
   }
   
   //Fill outputLayer with neurons
   for (int n = 0; n<noutputs; n++) {
-    outputLayer.push_back( Neuron(identifier,3,1) );
+    outputLayer.push_back( Neuron(identifier,nneurons,1) );
     identifier++;
   }
 
@@ -42,10 +42,13 @@ void Brain::initBrain(){
   for (int m = 0; m<ninputs; m++) {
     std::vector<float> weights;
     for (int n=0; n<inputLayer[m].numberOfInputs(); n++) {
-      weights.push_back(1); //the inputlayer Neurons don't modify the signal
+      //DEFAULT:
+      weights.push_back(getRandomNumber());
+      //DEBUG:
+      //weights.push_back(1);
     }
     inputLayer[m].setWeights(weights);
-    inputLayer[m].setThreshold(0.0);
+    inputLayer[m].setThreshold(getRandomNumber());
   }
   
    //init the outputLayer
@@ -53,12 +56,12 @@ void Brain::initBrain(){
     std::vector<float> weights;
     for (int n=0; n<outputLayer[m].numberOfInputs(); n++) {
       //DEFAULT:
-      //weights.push_back(getRandomWeight());
+      weights.push_back(getRandomNumber());
       //DEBUG:
-      weights.push_back(1);
+      //weights.push_back(1);
     }
     outputLayer[m].setWeights(weights);
-    outputLayer[m].setThreshold(0.0);
+    outputLayer[m].setThreshold(getRandomNumber());
   }
   
   //init the neurons
@@ -66,17 +69,26 @@ void Brain::initBrain(){
     std::vector<float> weights;
     for (int n=0; n<neuron[m].numberOfInputs(); n++) {
       //DEFAULT:
-      //weights.push_back(getRandomWeight());
+      weights.push_back(getRandomNumber());
       //DEBUG:
-      weights.push_back(1);
+      //weights.push_back(1);
     }
     //set weights and threshold of Neuron 0 in layer 0
     neuron[m].setWeights(weights);
-    neuron[m].setThreshold(1.0);
+    neuron[m].setThreshold(getRandomNumber());
   }
   
   //connect the neurons
+  //generate a neural network with 1 hidden layer:
+  
   //connect inputLayer neurons with active neurons
+  for (int m=0; m<ninputs; m++) {
+    for (int n=0; n<nneurons; n++) {
+      connectNeurons(&inputLayer[m],n,&neuron[n],m);
+    }
+  }
+  /*
+  //for nneurons = 3, ninputs = 4 and noutputs = 2 is this equivalent to
   connectNeurons(&inputLayer[0],0,&neuron[0],0);
   connectNeurons(&inputLayer[0],1,&neuron[1],0);
   connectNeurons(&inputLayer[0],2,&neuron[2],0);
@@ -89,14 +101,23 @@ void Brain::initBrain(){
   connectNeurons(&inputLayer[3],0,&neuron[0],3);
   connectNeurons(&inputLayer[3],1,&neuron[1],3);
   connectNeurons(&inputLayer[3],2,&neuron[2],3);
+  */
   
   //connect active neurons with outputLayer
+  for (int m=0; m<nneurons; m++) {
+    for (int n=0; n<noutputs; n++) {
+      connectNeurons(&neuron[m],n,&outputLayer[n],m);
+    }
+  }
+  /* 
+  //for nneurons = 3, ninputs = 4 and noutputs = 2 is this equivalent to
   connectNeurons(&neuron[0],0,&outputLayer[0],0);
   connectNeurons(&neuron[0],1,&outputLayer[1],0);
   connectNeurons(&neuron[1],0,&outputLayer[0],1);
   connectNeurons(&neuron[1],1,&outputLayer[1],1);
   connectNeurons(&neuron[2],0,&outputLayer[0],2);
   connectNeurons(&neuron[2],1,&outputLayer[1],2);
+  */
 }
 
 void Brain::connectNeurons(Neuron *neur1, int output, Neuron *neur2, int input) {
@@ -276,7 +297,7 @@ std::vector<float> Brain::output(const std::vector<float>& x) {
             //calculate te output of current neuron and store it in outtemp
             #ifdef DEBUG
               for (int l=0; l<neuron[n].numberOfInputs(); l++) {
-                std::cout<<"input of current neuron: "<<intemp[l]<<"\n";
+                std::cout<<"input of current neuron "<<strCNeur<<": "<<intemp[l]<<"\n";
               }
             #endif
             outtemp = neuron[n].calculateOutput(intemp);
@@ -341,16 +362,16 @@ std::vector<float> Brain::output(const std::vector<float>& x) {
         intemp.push_back(out[nOccur][indexOfOutput]);
       }
     }
-    //calculate te output of current neuron and store it in outtemp
+    //calculate the output of current neuron and store it in outtemp
     #ifdef DEBUG
-      for (int l=0; l<neuron[n].numberOfInputs(); l++) {
-        std::cout<<"input of current neuron "<<strCNeur<<": "<<intemp[k]<<"\n";
+      for (int l=0; l<outputLayer[n].numberOfInputs(); l++) {
+        std::cout<<"input of current neuron "<<strCNeur<<": "<<intemp[l]<<"\n";
       }
     #endif
     outtemp = outputLayer[n].calculateOutput(intemp);
     #ifdef DEBUG
-      for (int l=0; l<neuron[n].numberOfInputs(); l++) {
-        std::cout<<"output of current neuron "<<strCNeur<<": "<<outtemp[k]<<"\n";
+      for (int l=0; l<outputLayer[n].numberOfOutputs(); l++) {
+        std::cout<<"output of current neuron "<<strCNeur<<": "<<outtemp[l]<<"\n";
       }
     #endif
     totalOut.push_back(outtemp[0]);
@@ -450,15 +471,6 @@ std::string Brain::getConnectedOutput(Neuron *neuron1, int iinput){
   return strOutput;
 }
 
-float Brain::getRandomWeight(){
-  float a = 1.0;
-  float x = (float)rand()/(float)(RAND_MAX/a);
-  #ifdef DEBUGQ
-    std::cout<<"Random number: "<<x<<"\n";
-  #endif
-  return x;
-}
-
 int Brain::nameToInt(std::string name){
   std::string temp;
   int a;
@@ -472,6 +484,10 @@ int Brain::nameToInt(std::string name){
     std::cout<<"a: "<<a<<" temp: "<<temp<<"\n";
   #endif
   return a;
+}
+
+void Brain::train(const std::vector<float>& input, const std::vector<float>& output){
+
 }
 
 Brain::~Brain() {

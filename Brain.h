@@ -15,13 +15,15 @@ class Brain {
       void connectNeurons(Neuron *neur1, int output, Neuron *neur2, int input);
       //initializes the Brain and the Neurons
       void initBrain();
-      float getRandomWeight();
       //extract from string the iinput-th connection which neurons are connected with neur on the inputs
       std::string getConnectedNeuron(Neuron *neur, int iinput);
       //extract the output of neuron2 that is connected to neuron1 on input iinput
       std::string getConnectedOutput(Neuron *neuron1, int iinput);
       //takes neuron name, input or output name and returns integer (example: n0 -> 0, i1 -> 1, o2 -> 2)
       int nameToInt(std::string name);
+      //train the brain (set input and desired output)
+      void train(const std::vector<float>& input, const std::vector<float>& output);
+      
       
   private:
       int nneurons;

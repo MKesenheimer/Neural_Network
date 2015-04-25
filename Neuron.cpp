@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <math.h>
 #include "Neuron.h"
 
 Neuron::Neuron(int ident, int nninputs, int nnoutputs) {
@@ -27,14 +28,24 @@ Neuron::Neuron(int ident, int nninputs, int nnoutputs) {
 }
 
 void Neuron::setWeights(const std::vector<float>& ww) {
-    w = ww;
+  w = ww;
+  #ifdef DEBUG
+    std::cout<<"weights of neuron "<<identifier<<":\n";
+    for (int i=0; i<w.size(); i++) {
+      std::cout<<"i"<<i<<": "<<w[i]<<"\n";
+    }
+  #endif
 }
 
 void Neuron::setThreshold(float ttheta) {
   theta = ttheta;
+  #ifdef DEBUG
+    std::cout<<"threshold of neuron "<<identifier<<": "<<theta<<"\n";
+  #endif
 }
 
 std::vector<float> Neuron::calculateOutput(const std::vector<float>& xx) {
+  
   //set inputs
   i = xx;
   //transfer function
@@ -46,14 +57,26 @@ std::vector<float> Neuron::calculateOutput(const std::vector<float>& xx) {
   //why is this necessary? (without segfault)
   o.assign(noutputs,temp);
   
-  //theta function
-  for (int n=0; n<noutputs; n++) {
-    if (temp >= theta) {
-      o[n] = temp;
-    } else {
-      o[n] = 0;
+  //perceptron
+  //#define PERCEPTRON
+  #ifdef PERCEPTRON
+    //theta function
+    for (int n=0; n<noutputs; n++) {
+      if (temp >= theta) {
+        o[n] = 1;
+      } else {
+        o[n] = 0;
+      }
     }
-  }
+  #endif
+  
+  //sigmoid neuron:
+  #define SIGMOID
+  #ifdef SIGMOID
+    for (int n=0; n<noutputs; n++) {
+      o[n] = 1/(1+exp(theta-temp));
+    }
+  #endif
   
   return o;
 }
