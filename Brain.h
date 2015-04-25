@@ -13,8 +13,6 @@ class Brain {
       std::vector<float> output(const std::vector<float>& x);
       //connects output of neur1 with input of neuron neur2
       void connectNeurons(Neuron *neur1, int output, Neuron *neur2, int input);
-      //initializes the Brain and the Neurons
-      void initBrain();
       //extract from string the iinput-th connection which neurons are connected with neur on the inputs
       std::string getConnectedNeuron(Neuron *neur, int iinput);
       //extract the output of neuron2 that is connected to neuron1 on input iinput
@@ -23,6 +21,16 @@ class Brain {
       int nameToInt(std::string name);
       //train the brain (set input and desired output)
       void train(const std::vector<float>& input, const std::vector<float>& output);
+      
+      //return the neurons
+      std::vector<Neuron> getInputLayer();
+      std::vector<Neuron> getOutputLayer();
+      std::vector<Neuron> getNeurons();
+      
+      //set the neurons
+      void setInputLayer(std::vector<Neuron> vecNeur);
+      void setOutputLayer(std::vector<Neuron> vecNeur);
+      void setNeurons(std::vector<Neuron> vecNeur);
       
       int numberOfInputs();
       int numberOfOutputs();

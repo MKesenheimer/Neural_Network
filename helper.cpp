@@ -21,3 +21,24 @@ float norm(const std::vector<float>& a) {
     }
     return accum;
 }
+
+std::vector<float> subtract(const std::vector<float>& a, const std::vector<float>& b) {
+  std::vector<float> temp;
+  if (a.size() != b.size()) {
+    std::cout<<"error in function subtract. Vector a and b are unequal in size.";
+    exit(1);
+  } else {
+    for (int i=0; i<a.size(); i++) {
+      temp.push_back(a[i]-b[i]);
+    }
+  }
+  return temp;
+}
+
+float vecsum(const std::vector<float>& a) {
+  float temp = 0;
+  for (int j=0; j<a.size(); j++) {
+    temp += a[j];
+  }
+  return temp;
+}

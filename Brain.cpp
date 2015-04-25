@@ -17,111 +17,6 @@ Brain::Brain(int nneur, int ninp, int noutp){
   connections = "";
 }
 
-//if you want to change the design of the network, you should only do changes
-//in this function
-void Brain::initBrain(){
-  int identifier = 0;
-  
-  //Fill inputLayer with neurons
-  for (int i=0; i<ninputs; i++) {
-    inputLayer.push_back( Neuron(identifier,1,nneurons) );
-    identifier++;
-  }
-  
-  //Fill brain with active neurons
-  for (int i=0; i<nneurons; i++) {
-    neuron.push_back( Neuron(identifier,ninputs,noutputs) );
-    identifier++;
-  }
-  
-  //Fill outputLayer with neurons
-  for (int n = 0; n<noutputs; n++) {
-    outputLayer.push_back( Neuron(identifier,nneurons,1) );
-    identifier++;
-  }
-
-  //init the inputLayer
-  for (int m = 0; m<ninputs; m++) {
-    std::vector<float> weights;
-    for (int n=0; n<inputLayer[m].numberOfInputs(); n++) {
-      //DEFAULT:
-      weights.push_back(getRandomNumber());
-      //DEBUG:
-      //weights.push_back(1);
-    }
-    inputLayer[m].setWeights(weights);
-    inputLayer[m].setThreshold(getRandomNumber());
-  }
-  
-   //init the outputLayer
-  for (int m = 0; m<noutputs; m++) {
-    std::vector<float> weights;
-    for (int n=0; n<outputLayer[m].numberOfInputs(); n++) {
-      //DEFAULT:
-      weights.push_back(getRandomNumber());
-      //DEBUG:
-      //weights.push_back(1);
-    }
-    outputLayer[m].setWeights(weights);
-    outputLayer[m].setThreshold(getRandomNumber());
-  }
-  
-  //init the neurons
-  for (int m=0; m<nneurons; m++) {
-    std::vector<float> weights;
-    for (int n=0; n<neuron[m].numberOfInputs(); n++) {
-      //DEFAULT:
-      weights.push_back(getRandomNumber());
-      //DEBUG:
-      //weights.push_back(1);
-    }
-    //set weights and threshold of Neuron 0 in layer 0
-    neuron[m].setWeights(weights);
-    neuron[m].setThreshold(getRandomNumber());
-  }
-  
-  //connect the neurons
-  //generate a neural network with 1 hidden layer:
-  
-  //connect inputLayer neurons with active neurons
-  for (int m=0; m<ninputs; m++) {
-    for (int n=0; n<nneurons; n++) {
-      connectNeurons(&inputLayer[m],n,&neuron[n],m);
-    }
-  }
-  /*
-  //for nneurons = 3, ninputs = 4 and noutputs = 2 is this equivalent to
-  connectNeurons(&inputLayer[0],0,&neuron[0],0);
-  connectNeurons(&inputLayer[0],1,&neuron[1],0);
-  connectNeurons(&inputLayer[0],2,&neuron[2],0);
-  connectNeurons(&inputLayer[1],0,&neuron[0],1);
-  connectNeurons(&inputLayer[1],1,&neuron[1],1);
-  connectNeurons(&inputLayer[1],2,&neuron[2],1);
-  connectNeurons(&inputLayer[2],0,&neuron[0],2);
-  connectNeurons(&inputLayer[2],1,&neuron[1],2);
-  connectNeurons(&inputLayer[2],2,&neuron[2],2);
-  connectNeurons(&inputLayer[3],0,&neuron[0],3);
-  connectNeurons(&inputLayer[3],1,&neuron[1],3);
-  connectNeurons(&inputLayer[3],2,&neuron[2],3);
-  */
-  
-  //connect active neurons with outputLayer
-  for (int m=0; m<nneurons; m++) {
-    for (int n=0; n<noutputs; n++) {
-      connectNeurons(&neuron[m],n,&outputLayer[n],m);
-    }
-  }
-  /* 
-  //for nneurons = 3, ninputs = 4 and noutputs = 2 is this equivalent to
-  connectNeurons(&neuron[0],0,&outputLayer[0],0);
-  connectNeurons(&neuron[0],1,&outputLayer[1],0);
-  connectNeurons(&neuron[1],0,&outputLayer[0],1);
-  connectNeurons(&neuron[1],1,&outputLayer[1],1);
-  connectNeurons(&neuron[2],0,&outputLayer[0],2);
-  connectNeurons(&neuron[2],1,&outputLayer[1],2);
-  */
-}
-
 void Brain::connectNeurons(Neuron *neur1, int output, Neuron *neur2, int input) {
   std::string strneur1, strneur2;
   strneur1 = neur1->getNeuronName();
@@ -499,6 +394,30 @@ int Brain::numberOfOutputs() {
 int Brain::numberOfNeurons() {
   return nneurons;
 }
+
+std::vector<Neuron> Brain::getInputLayer() {
+  return inputLayer;
+}
+
+std::vector<Neuron> Brain::getOutputLayer() {
+  return outputLayer;
+}
+
+std::vector<Neuron> Brain::getNeurons() {
+ return neuron;
+}
+
+void Brain::setInputLayer(std::vector<Neuron> vecNeur) {
+  inputLayer = vecNeur;
+}
+void Brain::setOutputLayer(std::vector<Neuron> vecNeur){
+  outputLayer = vecNeur;
+}
+
+void Brain::setNeurons(std::vector<Neuron> vecNeur){
+  neuron = vecNeur;
+}
+
 
 Brain::~Brain() {
   #ifdef DEBUG
