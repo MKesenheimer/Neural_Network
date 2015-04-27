@@ -26,7 +26,7 @@ PARENTDIR  = $(WORKINGDIR)/..
 ## search for the files and set paths
 
 vpath %.cpp $(WORKINGDIR)
-vpath %.a $(WORKINGDIR)/build
+vpath %.o $(WORKINGDIR)/build
 UINCLUDE = $(WORKINGDIR)
 
 ########################################################################
@@ -34,7 +34,7 @@ UINCLUDE = $(WORKINGDIR)
 CXX  = $(COMPILER) $(FLAGS) $(OPT) $(WARN) $(DEBUG) $(PREPRO) -I$(UINCLUDE)
 INCLUDE = $(wildcard *.h $(UINCLUDE)/*.h)
 
-%.a: %.cpp $(INCLUDE)
+%.o: %.cpp $(INCLUDE)
 	$(CXX) -c -o build/$@ $<
 
 # Libraries
@@ -47,7 +47,7 @@ FRM =
 ## Linker files
 
 ### USER Files ###
-USER = Main.a Neuron.a Brain.a Trainer.a helper.a
+USER = Main.o Neuron.o Brain.o Trainer.o helper.o
 
 
 ########################################################################
@@ -60,7 +60,7 @@ Brain: $(BUILD)
 	  $(CXX) $(patsubst %,build/%,$(BUILD)) $(LDFLAGS) $(LIB) $(FRM) -o $@
 
 clean:
-	rm -f build/*.a Brain
+	rm -f build/*.o Brain
 
 do:
 	make && ./Brain
