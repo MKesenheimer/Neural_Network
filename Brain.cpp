@@ -440,7 +440,7 @@ void Brain::setParameter(int identifier, const std::vector<float>& weights, floa
   if (ninputs<= identifier && identifier < nneurons) {
     if(neuron[identifier].getIdentifier() != identifier) {
       std::cout<<"error in setParameter:\nidentifier = "<<identifier<<"\n";
-      std::cout<<"inputLayer.getIdentifier() = "<<inputLayer[identifier].getIdentifier()<<"\n";
+      std::cout<<"inputLayer.getIdentifier() = "<<neuron[identifier].getIdentifier()<<"\n";
     }
     neuron[identifier-ninputs].setWeights(weights);
     neuron[identifier-ninputs].setThreshold(theta);
@@ -450,7 +450,7 @@ void Brain::setParameter(int identifier, const std::vector<float>& weights, floa
   if (nneurons<= identifier && identifier < noutputs) {
     if(outputLayer[identifier].getIdentifier() != identifier) {
       std::cout<<"error in setParameter:\nidentifier = "<<identifier<<"\n";
-      std::cout<<"inputLayer.getIdentifier() = "<<inputLayer[identifier].getIdentifier()<<"\n";
+      std::cout<<"inputLayer.getIdentifier() = "<<outputLayer[identifier].getIdentifier()<<"\n";
     }
     outputLayer[identifier-ninputs-noutputs].setWeights(weights);
     outputLayer[identifier-ninputs-noutputs].setThreshold(theta);
