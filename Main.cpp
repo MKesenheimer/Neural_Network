@@ -61,36 +61,55 @@ void initBrain(Brain* brain){
   vector<Neuron> outputLayer;
   vector<Neuron> neuron;
   
+  std::vector<float> weights;
+  
+  weights.clear();
+  
+  //the initialization of the neurons must happen in this order!
   //Fill inputLayer with neurons
   for (int i=0; i<(brain->numberOfInputs()); i++) {
-    inputLayer.push_back( Neuron(identifier,1,brain->numberOfNeurons()) );
+    inputLayer.push_back( Neuron(identifier,1,brain->numberOfNeurons()) ); //comment out!
+    brain->addInputLayerNeuron(identifier, brain->numberOfNeurons());
+    weights.push_back(getRandomNumber());
+    brain->setParameter(identifier,weights,getRandomNumber());
     identifier++;
   }
   
+  weights.clear();
+  
   //Fill brain with active neurons
   for (int i=0; i<(brain->numberOfNeurons()); i++) {
-    neuron.push_back( Neuron(identifier,brain->numberOfInputs(),brain->numberOfOutputs()) );
+    neuron.push_back( Neuron(identifier,brain->numberOfInputs(),brain->numberOfOutputs()) ); //comment out!
+    brain->addActiveNeuron(identifier, brain->numberOfInputs(),brain->numberOfOutputs());
+    for (int n=0; n<brain->numberOfInputs(); n++) {
+      weights.push_back(getRandomNumber());
+    }
+    brain->setParameter(identifier,weights,getRandomNumber());
     identifier++;
   }
   
   //Fill outputLayer with neurons
   for (int n = 0; n<(brain->numberOfOutputs()); n++) {
     outputLayer.push_back( Neuron(identifier,brain->numberOfNeurons(),1) );
+    brain->addOutputLayerNeuron(identifier, brain->numberOfNeurons());
+    
     identifier++;
   }
-
-  //init the inputLayer
-  for (int m = 0; m<(brain->numberOfInputs()); m++) {
+  
+  //init the neurons
+  for (int m=0; m<(brain->numberOfNeurons()); m++) {
     std::vector<float> weights;
-    for (int n=0; n<inputLayer[m].numberOfInputs(); n++) {
+    for (int n=0; n<neuron[m].numberOfInputs(); n++) {
       //DEFAULT:
       weights.push_back(getRandomNumber());
       //DEBUG:
       //weights.push_back(1);
     }
-    inputLayer[m].setWeights(weights);
-    inputLayer[m].setThreshold(getRandomNumber());
+    //set weights and threshold of Neuron m
+    neuron[m].setWeights(weights);
+    neuron[m].setThreshold(getRandomNumber());
   }
+
   
    //init the outputLayer
   for (int m = 0; m<(brain->numberOfOutputs()); m++) {
@@ -103,22 +122,9 @@ void initBrain(Brain* brain){
     }
     outputLayer[m].setWeights(weights);
     outputLayer[m].setThreshold(getRandomNumber());
+    //brain->setParameter()
   }
-  
-  //init the neurons
-  for (int m=0; m<(brain->numberOfNeurons()); m++) {
-    std::vector<float> weights;
-    for (int n=0; n<neuron[m].numberOfInputs(); n++) {
-      //DEFAULT:
-      weights.push_back(getRandomNumber());
-      //DEBUG:
-      //weights.push_back(1);
-    }
-    //set weights and threshold of Neuron 0 in layer 0
-    neuron[m].setWeights(weights);
-    neuron[m].setThreshold(getRandomNumber());
-  }
-  
+
   //save the neurons
   brain->setInputLayer(inputLayer);
   brain->setOutputLayer(outputLayer);

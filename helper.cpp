@@ -10,8 +10,8 @@ float getRandomNumber(){
   #ifdef DEBUGQ
     std::cout<<"Random number: "<<x<<"\n";
   #endif
-  //return 1;
-  return x;
+  return 1;
+  //return x;
 }
 
 float norm(const std::vector<float>& a) {

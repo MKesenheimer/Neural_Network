@@ -32,10 +32,18 @@ class Brain {
       void setOutputLayer(std::vector<Neuron> vecNeur);
       void setNeurons(std::vector<Neuron> vecNeur);
       
+      //return the number of inputs, putputs and neurons
       int numberOfInputs();
       int numberOfOutputs();
       int numberOfNeurons();
       
+      //add neurons to the brain
+      void addInputLayerNeuron(int identifier, int nouts);
+      void addOutputLayerNeuron(int identifier, int nins);
+      void addActiveNeuron(int identifier, int nins, int nouts);
+      
+      //set the weight and the theta function of neuron with identifier id
+      void setParameter(int identifier, const std::vector<float>& weights, float theta);
       
   private:
       int nneurons;

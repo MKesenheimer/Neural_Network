@@ -15,6 +15,10 @@ Brain::Brain(int nneur, int ninp, int noutp){
   ninputs = ninp;
   noutputs = noutp;
   connections = "";
+  
+  neuron.reserve(nneurons);
+  inputLayer.reserve(ninputs);
+  outputLayer.reserve(noutputs);
 }
 
 void Brain::connectNeurons(Neuron *neur1, int output, Neuron *neur2, int input) {
@@ -418,6 +422,52 @@ void Brain::setNeurons(std::vector<Neuron> vecNeur){
   neuron = vecNeur;
 }
 
+void Brain::setParameter(int identifier, const std::vector<float>& weights, float theta) {
+  //neur->setWeights(weights);
+  //neur->setThreshold(theta);
+  
+  //0 <= identifier < ninputs: inputlayer neuron
+  if (0<= identifier && identifier < ninputs) {
+    if(inputLayer[identifier].getIdentifier() != identifier) {
+      std::cout<<"error in setParameter:\nidentifier = "<<identifier<<"\n";
+      std::cout<<"inputLayer.getIdentifier() = "<<inputLayer[identifier].getIdentifier()<<"\n";
+    }
+    inputLayer[identifier].setWeights(weights);
+    inputLayer[identifier].setThreshold(theta);
+  }
+  
+  //ninputs <= identifier < nneurons: active neuron
+  if (ninputs<= identifier && identifier < nneurons) {
+    if(neuron[identifier].getIdentifier() != identifier) {
+      std::cout<<"error in setParameter:\nidentifier = "<<identifier<<"\n";
+      std::cout<<"inputLayer.getIdentifier() = "<<inputLayer[identifier].getIdentifier()<<"\n";
+    }
+    neuron[identifier-ninputs].setWeights(weights);
+    neuron[identifier-ninputs].setThreshold(theta);
+  }
+  
+  //nneurons <= identifier < noutputs: outputlayer neuron
+  if (nneurons<= identifier && identifier < noutputs) {
+    if(outputLayer[identifier].getIdentifier() != identifier) {
+      std::cout<<"error in setParameter:\nidentifier = "<<identifier<<"\n";
+      std::cout<<"inputLayer.getIdentifier() = "<<inputLayer[identifier].getIdentifier()<<"\n";
+    }
+    outputLayer[identifier-ninputs-noutputs].setWeights(weights);
+    outputLayer[identifier-ninputs-noutputs].setThreshold(theta);
+  }
+}
+
+void Brain::addInputLayerNeuron(int identifier, int nouts) {
+  inputLayer.push_back( Neuron(identifier,1,nouts) );
+}
+
+void Brain::addOutputLayerNeuron(int identifier, int nins) {
+  outputLayer.push_back( Neuron(identifier,nins,1) );
+}
+
+void Brain::addActiveNeuron(int identifier, int nins, int nouts) {
+  neuron.push_back( Neuron(identifier,nins,nouts) );
+}
 
 Brain::~Brain() {
   #ifdef DEBUG
