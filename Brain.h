@@ -8,6 +8,7 @@ class Brain {
   public:
       //construct Brain with number of neurons and number of layers
       Brain(int nneur, int ninputs, int noutputs);
+      void initBrain();
       ~Brain();
       //calculates the output
       std::vector<float> output(const std::vector<float>& x);
@@ -22,16 +23,6 @@ class Brain {
       //train the brain (set input and desired output)
       void train(const std::vector<float>& input, const std::vector<float>& output);
       
-      //return the neurons
-      std::vector<Neuron> getInputLayer();
-      std::vector<Neuron> getOutputLayer();
-      std::vector<Neuron> getNeurons();
-      
-      //set the neurons
-      void setInputLayer(std::vector<Neuron> vecNeur);
-      void setOutputLayer(std::vector<Neuron> vecNeur);
-      void setNeurons(std::vector<Neuron> vecNeur);
-      
       //return the number of inputs, putputs and neurons
       int numberOfInputs();
       int numberOfOutputs();
@@ -43,7 +34,9 @@ class Brain {
       void addActiveNeuron(int identifier, int nins, int nouts);
       
       //set the weight and the theta function of neuron with identifier id
-      void setParameter(int identifier, const std::vector<float>& weights, float theta);
+      void setParamInputLayer(int n, const std::vector<float>& weights, float theta);
+      void setParamOutputLayer(int n, const std::vector<float>& weights, float theta);
+      void setParamActiveNeuron(int n, const std::vector<float>& weights, float theta);
       
   private:
       int nneurons;

@@ -18,6 +18,8 @@ void Trainer::train(Brain* brain) {
     input.push_back(getRandomNumber());
   }
   
+  //brain->setParamInputLayer(0,input,1);
+  
   //Try first optimizing the brain so that output = Sum(input)
   for (int i=0; i<(brain->numberOfOutputs()); i++) {
     desiredOutput.push_back(vecsum(input));

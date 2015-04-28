@@ -10,7 +10,7 @@ Brain::Brain(int nneur, int ninp, int noutp){
     std::cout << "Constructing Brain ";
     std::cout << "with "<<nneur<<" active neuron(s).\n";
   #endif
-  
+
   nneurons = nneur;
   ninputs = ninp;
   noutputs = noutp;
@@ -19,7 +19,69 @@ Brain::Brain(int nneur, int ninp, int noutp){
   neuron.reserve(nneurons);
   inputLayer.reserve(ninputs);
   outputLayer.reserve(noutputs);
+  
+  initBrain();
 }
+
+//if you want to change the design of the network, you should only
+//make changes in this function
+void Brain::initBrain(){
+  int identifier = 0;
+  std::vector<float> weights;
+  
+  //Fill inputLayer with neurons
+  for (int i=0; i<ninputs; i++) {
+    addInputLayerNeuron(identifier,nneurons);
+    for (int j=0; j<1; j++) {
+      weights.push_back(getRandomNumber());
+    }
+    setParamInputLayer(i,weights,getRandomNumber());
+    identifier++;
+  }
+  
+  weights.clear();
+  
+  //Fill brain with active neurons
+  for (int i=0; i<nneurons; i++) {
+    addActiveNeuron(identifier,ninputs,noutputs);
+    for (int j=0; j<ninputs; j++) {
+      weights.push_back(getRandomNumber());
+    }
+    setParamActiveNeuron(i,weights,getRandomNumber());
+    identifier++;
+  }
+  
+  weights.clear();
+  
+  //Fill outputLayer with neurons
+  for (int i = 0; i<noutputs; i++) {
+    addOutputLayerNeuron(identifier,nneurons);
+    for (int j=0; j<nneurons; j++) {
+      weights.push_back(getRandomNumber());
+    }
+    setParamOutputLayer(i,weights,getRandomNumber());
+    identifier++;
+  }
+  
+  
+  //connect the neurons
+  //generate a neural network with 1 hidden layer:
+  
+  //connect inputLayer neurons with active neurons
+  for (int m=0; m<ninputs; m++) {
+    for (int n=0; n<nneurons; n++) {
+      connectNeurons(&inputLayer[m],n,&neuron[n],m);
+    }
+  }
+  
+  //connect active neurons with outputLayer
+  for (int m=0; m<nneurons; m++) {
+    for (int n=0; n<noutputs; n++) {
+      connectNeurons(&neuron[m],n,&outputLayer[n],m);
+    }
+  }
+}
+
 
 void Brain::connectNeurons(Neuron *neur1, int output, Neuron *neur2, int input) {
   std::string strneur1, strneur2;
@@ -399,62 +461,19 @@ int Brain::numberOfNeurons() {
   return nneurons;
 }
 
-std::vector<Neuron> Brain::getInputLayer() {
-  return inputLayer;
+void Brain::setParamInputLayer(int n, const std::vector<float>& weights, float theta) {
+    inputLayer[n].setWeights(weights);
+    inputLayer[n].setThreshold(theta);
 }
 
-std::vector<Neuron> Brain::getOutputLayer() {
-  return outputLayer;
+void Brain::setParamOutputLayer(int n, const std::vector<float>& weights, float theta) {
+    outputLayer[n].setWeights(weights);
+    outputLayer[n].setThreshold(theta);
 }
 
-std::vector<Neuron> Brain::getNeurons() {
- return neuron;
-}
-
-void Brain::setInputLayer(std::vector<Neuron> vecNeur) {
-  inputLayer = vecNeur;
-}
-void Brain::setOutputLayer(std::vector<Neuron> vecNeur){
-  outputLayer = vecNeur;
-}
-
-void Brain::setNeurons(std::vector<Neuron> vecNeur){
-  neuron = vecNeur;
-}
-
-void Brain::setParameter(int identifier, const std::vector<float>& weights, float theta) {
-  //neur->setWeights(weights);
-  //neur->setThreshold(theta);
-  
-  //0 <= identifier < ninputs: inputlayer neuron
-  if (0<= identifier && identifier < ninputs) {
-    if(inputLayer[identifier].getIdentifier() != identifier) {
-      std::cout<<"error in setParameter:\nidentifier = "<<identifier<<"\n";
-      std::cout<<"inputLayer.getIdentifier() = "<<inputLayer[identifier].getIdentifier()<<"\n";
-    }
-    inputLayer[identifier].setWeights(weights);
-    inputLayer[identifier].setThreshold(theta);
-  }
-  
-  //ninputs <= identifier < nneurons: active neuron
-  if (ninputs<= identifier && identifier < nneurons) {
-    if(neuron[identifier].getIdentifier() != identifier) {
-      std::cout<<"error in setParameter:\nidentifier = "<<identifier<<"\n";
-      std::cout<<"inputLayer.getIdentifier() = "<<neuron[identifier].getIdentifier()<<"\n";
-    }
-    neuron[identifier-ninputs].setWeights(weights);
-    neuron[identifier-ninputs].setThreshold(theta);
-  }
-  
-  //nneurons <= identifier < noutputs: outputlayer neuron
-  if (nneurons<= identifier && identifier < noutputs) {
-    if(outputLayer[identifier].getIdentifier() != identifier) {
-      std::cout<<"error in setParameter:\nidentifier = "<<identifier<<"\n";
-      std::cout<<"inputLayer.getIdentifier() = "<<outputLayer[identifier].getIdentifier()<<"\n";
-    }
-    outputLayer[identifier-ninputs-noutputs].setWeights(weights);
-    outputLayer[identifier-ninputs-noutputs].setThreshold(theta);
-  }
+void Brain::setParamActiveNeuron(int n, const std::vector<float>& weights, float theta) {
+    neuron[n].setWeights(weights);
+    neuron[n].setThreshold(getRandomNumber());
 }
 
 void Brain::addInputLayerNeuron(int identifier, int nouts) {
