@@ -10,8 +10,8 @@ float getRandomNumber(){
   #ifdef DEBUGQ
     std::cout<<"Random number: "<<x<<"\n";
   #endif
-  return 1;
-  //return x;
+  //return 1;
+  return x;
 }
 
 float norm(const std::vector<float>& a) {
@@ -39,6 +39,16 @@ float vecsum(const std::vector<float>& a) {
   float temp = 0;
   for (int j=0; j<a.size(); j++) {
     temp += a[j];
+  }
+  return temp;
+}
+
+int deltaFct(int i, int j) {
+  int temp;
+  if (i==j) {
+    temp = 1;
+  } else {
+    temp = 0;
   }
   return temp;
 }

@@ -29,37 +29,45 @@ void Brain::initBrain(){
   int identifier = 0;
   std::vector<float> weights;
   
+  //debug
+  //int debint = 0;
+  
   //Fill inputLayer with neurons
   for (int i=0; i<ninputs; i++) {
     addInputLayerNeuron(identifier,nneurons);
+    weights.clear();
     for (int j=0; j<1; j++) {
       weights.push_back(getRandomNumber());
+      //weights.push_back(debint++);
     }
     setParamInputLayer(i,weights,getRandomNumber());
+    //setParamInputLayer(i,weights,debint++);
     identifier++;
   }
-  
-  weights.clear();
   
   //Fill brain with active neurons
   for (int i=0; i<nneurons; i++) {
     addActiveNeuron(identifier,ninputs,noutputs);
+    weights.clear();
     for (int j=0; j<ninputs; j++) {
       weights.push_back(getRandomNumber());
+      //weights.push_back(debint++);
     }
     setParamActiveNeuron(i,weights,getRandomNumber());
+    //setParamActiveNeuron(i,weights,debint++);
     identifier++;
   }
-  
-  weights.clear();
   
   //Fill outputLayer with neurons
   for (int i = 0; i<noutputs; i++) {
     addOutputLayerNeuron(identifier,nneurons);
+    weights.clear();
     for (int j=0; j<nneurons; j++) {
       weights.push_back(getRandomNumber());
+      //weights.push_back(debint++);
     }
     setParamOutputLayer(i,weights,getRandomNumber());
+    //setParamOutputLayer(i,weights,debint++);
     identifier++;
   }
   
@@ -353,16 +361,16 @@ std::vector<float> Brain::output(const std::vector<float>& x) {
   return totalOut;
 }
 
-std::string Brain::getConnectedNeuron(Neuron *target, int iinput){
+std::string Brain::getConnectedNeuron(Neuron *neur, int iinput){
   
   //check if iinput was set correctly
-  if (iinput >= (target->numberOfInputs())) {
+  if (iinput >= (neur->numberOfInputs())) {
     std::cout<<"\nError: iinput is to large: "<<iinput<<"\n";
     exit(1);
   }
   
   //definitions
-  std::string targetname = target->getNeuronName();
+  std::string targetname = neur->getNeuronName();
   std::string strConnected = "";
   std::string strcc = ""; // current connection
   int counter = 0;
@@ -371,7 +379,7 @@ std::string Brain::getConnectedNeuron(Neuron *target, int iinput){
   //if 0<=iinput<numberOfInputs return only the neuron that is connected
   //to the iinput-th input
   std::size_t lastpos = 1;
-  for (int j=0; j<(target->numberOfInputs()); j++) {
+  for (int j=0; j<(neur->numberOfInputs()); j++) {
     std::size_t targetpos = connections.find(targetname+",i", lastpos);
     std::size_t pointerpos1 = connections.find("<- (", targetpos);
     std::size_t pointerpos2 = connections.find(",o", targetpos);
@@ -394,7 +402,7 @@ std::string Brain::getConnectedNeuron(Neuron *target, int iinput){
     }
   }
   
-  if (counter<(target->numberOfInputs())) {
+  if (counter<(neur->numberOfInputs())) {
     std::cout<<"\nError: neuron "<<targetname<<" is not fully connected."<<"\n";
     exit(1);
   }
@@ -403,9 +411,9 @@ std::string Brain::getConnectedNeuron(Neuron *target, int iinput){
   return strConnected;
 }
 
-std::string Brain::getConnectedOutput(Neuron *neuron1, int iinput){
-  std::string strName1 = neuron1->getNeuronName();
-  std::string strName2 = getConnectedNeuron(neuron1, iinput);
+std::string Brain::getConnectedOutput(Neuron *neur, int iinput){
+  std::string strName1 = neur->getNeuronName();
+  std::string strName2 = getConnectedNeuron(neur, iinput);
   std::string strInput = "i" + std::to_string(iinput);
   std::string strFind = "(" + strName1 + "," + strInput + ") <- (" + strName2 + ",";
   std::string strOutput = "";
@@ -473,7 +481,7 @@ void Brain::setParamOutputLayer(int n, const std::vector<float>& weights, float 
 
 void Brain::setParamActiveNeuron(int n, const std::vector<float>& weights, float theta) {
     neuron[n].setWeights(weights);
-    neuron[n].setThreshold(getRandomNumber());
+    neuron[n].setThreshold(theta);
 }
 
 void Brain::addInputLayerNeuron(int identifier, int nouts) {
@@ -486,6 +494,73 @@ void Brain::addOutputLayerNeuron(int identifier, int nins) {
 
 void Brain::addActiveNeuron(int identifier, int nins, int nouts) {
   neuron.push_back( Neuron(identifier,nins,nouts) );
+}
+
+std::vector<float> Brain::getAllParameters() {
+  std::vector<float> params;
+  std::vector<float> temp;
+  
+  //first loop through the inputLayer neurons
+  for (int i=0; i<ninputs; i++) {
+    for (int j=0; j<inputLayer[i].numberOfInputs()+1; j++) {
+      //the data format is: weight1, weight2, ..., weightn, theta
+      temp = inputLayer[i].getParams();
+      params.push_back(temp[j]);
+    }
+  }
+  
+  //then through the active neurons
+  for (int i=0; i<nneurons; i++) {
+    for (int j=0; j<neuron[i].numberOfInputs()+1; j++) {
+      //the data format is: weight1, weight2, ..., weightn, theta
+      temp = neuron[i].getParams();
+      params.push_back(temp[j]);
+    }
+  }
+  
+  for (int i=0; i<noutputs; i++) {
+    for (int j=0; j<outputLayer[i].numberOfInputs()+1; j++) {
+      //the data format is: weight1, weight2, ..., weightn, theta
+      temp = outputLayer[i].getParams();
+      params.push_back(temp[j]);
+    }
+  }
+  
+  return params;
+}
+
+void Brain::setAllParameters(const std::vector<float>& params) {
+  std::vector<float> weights;
+  float theta;
+  int iter = 0;
+  
+  //restore the parameters for each neuron from params string
+  for (int i=0; i<ninputs; i++) {
+    weights.clear();
+    for (int j=0; j<inputLayer[i].numberOfInputs(); j++) {
+      weights.push_back(params[iter++]);
+    }
+    theta = params[iter++];
+    setParamInputLayer(i,weights,theta);
+  }
+  
+  for (int i=0; i<nneurons; i++) {
+    weights.clear();
+    for (int j=0; j<neuron[i].numberOfInputs(); j++) {
+      weights.push_back(params[iter++]);
+    }
+    theta = params[iter++];
+    setParamActiveNeuron(i,weights,theta);
+  }
+  
+  for (int i=0; i<noutputs; i++) {
+    weights.clear();
+    for (int j=0; j<outputLayer[i].numberOfInputs(); j++) {
+      weights.push_back(params[iter++]);
+    }
+    theta = params[iter++];
+    setParamOutputLayer(i,weights,theta);
+  }
 }
 
 Brain::~Brain() {

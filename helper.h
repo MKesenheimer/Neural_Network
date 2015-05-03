@@ -9,5 +9,7 @@
   std::vector<float> subtract(const std::vector<float>& a, const std::vector<float>& b);
   //sum of vector entries:
   float vecsum(const std::vector<float>& a);
+  //Kronecker delta function
+  int deltaFct(int i, int j);
 
 #endif

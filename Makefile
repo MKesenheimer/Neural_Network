@@ -9,7 +9,7 @@ COMPILER = g++ -std=c++11
 FLAGS   = -g
 LDFLAGS =
 PREPRO  = 
-#DEBUG   = -D DEBUG
+DEBUG   = -D DEBUGT
 OPT     = -O2
 WARN    =
 

@@ -14,6 +14,8 @@ class Neuron {
     int numberOfOutputs();
     int getIdentifier();
     std::string getNeuronName();
+    //return the parameters of this neuron (weights, threshold)
+    std::vector<float> getParams();
 
   private:
     int identifier;         //"name" of neuron

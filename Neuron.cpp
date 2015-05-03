@@ -31,7 +31,7 @@ void Neuron::setWeights(const std::vector<float>& ww) {
   w = ww;
   #ifdef DEBUG
     std::cout<<"weights of neuron "<<identifier<<":\n";
-    for (int i=0; i<w.size(); i++) {
+    for (int i=0; i<ninputs; i++) {
       std::cout<<"i"<<i<<": "<<w[i]<<"\n";
     }
   #endif
@@ -97,6 +97,20 @@ std::string Neuron::getNeuronName() {
   std::string temp;
   temp = "n" + std::to_string(getIdentifier());
   return temp;
+}
+
+std::vector<float> Neuron::getParams() {
+  std::vector<float> params;
+  //1 threshold and "ninputs" weights
+  params.reserve(ninputs+1);
+  
+  for (int i=0; i<ninputs; i++) {
+    params.push_back(w[i]);
+  }
+  
+  params.push_back(theta);
+  
+  return params;
 }
 
 Neuron::~Neuron() {
