@@ -14,9 +14,11 @@ int main()
   cout << "           Simple Neuronal Network            \n";
   cout << "==============================================\n\n";
   
-  //the number of neurons of the brain
+  //the number of active neurons
   int nneurons = 5;
+  //the number of input values
   int ninputs = 4;
+  //the number of output values
   int noutputs = 2;
   
   //constructing and init the brain
@@ -29,7 +31,7 @@ int main()
   std::vector<float> desiredOutput;
   
   //set up the dataset
-  //Set 1
+  //set 1
   demandedInput.clear();
   desiredOutput.clear();
   demandedInput.push_back(1);
@@ -39,7 +41,7 @@ int main()
   desiredOutput.push_back(0);
   desiredOutput.push_back(0);
   TonyStark.addDataSet(demandedInput,desiredOutput);
-  //Set 2
+  //set 2
   demandedInput.clear();
   desiredOutput.clear();
   demandedInput.push_back(0);
@@ -49,7 +51,7 @@ int main()
   desiredOutput.push_back(1);
   desiredOutput.push_back(0);
   TonyStark.addDataSet(demandedInput,desiredOutput);
-  //Set 3
+  //set 3
   demandedInput.clear();
   desiredOutput.clear();
   demandedInput.push_back(0);
@@ -59,7 +61,7 @@ int main()
   desiredOutput.push_back(0);
   desiredOutput.push_back(1);
   TonyStark.addDataSet(demandedInput,desiredOutput);
-  //Set 4
+  //set 4
   demandedInput.clear();
   desiredOutput.clear();
   demandedInput.push_back(0);
@@ -79,7 +81,8 @@ int main()
   vector<float> input;
   vector<float> output;
   
-  //Test 1
+  //we can now test the brain
+  //test 1
   input.clear();
   input.push_back(1);
   input.push_back(0);
@@ -95,7 +98,7 @@ int main()
   }
   cout<<endl;
   
-  //Test 2
+  //test 2
   input.clear();
   input.push_back(0);
   input.push_back(1);
@@ -111,7 +114,7 @@ int main()
   }
   cout<<endl;
   
-  //Test 3
+  //test 3
   input.clear();
   input.push_back(0);
   input.push_back(0);
@@ -127,7 +130,7 @@ int main()
   }
   cout<<endl;
   
-  //Test 4
+  //test 4
   input.clear();
   input.push_back(0);
   input.push_back(0);
