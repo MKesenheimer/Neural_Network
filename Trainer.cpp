@@ -191,7 +191,7 @@ void Trainer::train(Brain* brain) {
   time (&end);
   double dif = difftime (end,start);
   std::cout<<"=> Brain is now trained.\n";
-  printf ("Elapsed time is %.2lf seconds.\n", dif );
+  printf ("Elapsed time: %.2lfs.\n", dif );
 }
 
 void Trainer::addDataSet(const std::vector<long double>& demandedInputs, const std::vector<long double>& desiredOutputs) {

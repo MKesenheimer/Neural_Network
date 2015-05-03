@@ -24,7 +24,7 @@ int main()
   //accuracy of the desired output
   long double accuracy = 0.001;
   //learning rate of the brain
-  long double learningRate = 20;
+  long double learningRate = 10;
   
   //constructing and initializing the brain
   Brain Jarvis(nneurons,ninputs,noutputs);
