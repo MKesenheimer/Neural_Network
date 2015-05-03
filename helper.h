@@ -2,13 +2,13 @@
 #define HELPER_H
 
   //get random number between 0 and 1
-  float getRandomNumber();
+  long double getRandomNumber();
   //calculate the norm of vector a
-  float norm(const std::vector<float>& a);
+  long double norm(const std::vector<long double>& a);
   //subtract two vectos and return a-b
-  std::vector<float> subtract(const std::vector<float>& a, const std::vector<float>& b);
+  std::vector<long double> subtract(const std::vector<long double>& a, const std::vector<long double>& b);
   //sum of vector entries:
-  float vecsum(const std::vector<float>& a);
+  long double vecsum(const std::vector<long double>& a);
   //Kronecker delta function
   int deltaFct(int i, int j);
 

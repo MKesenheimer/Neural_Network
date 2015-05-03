@@ -7,33 +7,33 @@
 class Trainer {
   public:
     //the onstructor saves the brain which should get trained
-    Trainer(float rate, float accuracy);
+    Trainer(long double rate, long double accuracy);
     //function to train the brain
     void train(Brain* brain);
     //function to determine the training progress
     //input parameters are all weights and the thresholds
-    float costFunction(const std::vector<float>& allParams);
+    long double costFunction(const std::vector<long double>& allParams);
     //set the dataset which the brain should learn
     void setData1();
     //add a dataset
-    void addDataSet(const std::vector<float>& demandedInputs, const std::vector<float>& desiredOutputs);
+    void addDataSet(const std::vector<long double>& demandedInputs, const std::vector<long double>& desiredOutputs);
     
   private:
     //this is the dataset we want to teach the brain
-    std::vector< std::vector<float> > allDemandedInputs;
-    std::vector< std::vector<float> > allDesiredOutputs;
+    std::vector< std::vector<long double> > allDemandedInputs;
+    std::vector< std::vector<long double> > allDesiredOutputs;
     //number of datasets
     int numberOfSets;
     //the brain which should get trained
     Brain* theBrain;
     //small number for numerical derivatives
-    float h;
+    long double h;
     //the learning rate -> how fast should the brain learn?
-    float learningRate;
+    long double learningRate;
     //gradient of the cost function
-    std::vector<float> gradientC;
+    std::vector<long double> gradientC;
     //accuracy
-    float eps;
+    long double eps;
   
 };
 

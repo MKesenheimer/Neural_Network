@@ -2,11 +2,11 @@
 #include <vector>
 #include <sstream>
 #include <math.h>
-#include "helper.h"
+#include "Helper.h"
 
-float getRandomNumber(){
-  float a = 1.0;
-  float x = (float)rand()/(float)(RAND_MAX/a);
+long double getRandomNumber(){
+  long double a = 1.0;
+  long double x = (long double)rand()/(long double)(RAND_MAX/a);
   #ifdef DEBUGQ
     std::cout<<"Random number: "<<x<<"\n";
   #endif
@@ -14,16 +14,16 @@ float getRandomNumber(){
   return x;
 }
 
-float norm(const std::vector<float>& a) {
-  float accum = 0;
+long double norm(const std::vector<long double>& a) {
+  long double accum = 0;
     for (int i = 0; i < a.size(); i++) {
         accum += a[i] * a[i];
     }
     return accum;
 }
 
-std::vector<float> subtract(const std::vector<float>& a, const std::vector<float>& b) {
-  std::vector<float> temp;
+std::vector<long double> subtract(const std::vector<long double>& a, const std::vector<long double>& b) {
+  std::vector<long double> temp;
   if (a.size() != b.size()) {
     std::cout<<"error in function subtract. Vector a and b are unequal in size.";
     exit(1);
@@ -35,8 +35,8 @@ std::vector<float> subtract(const std::vector<float>& a, const std::vector<float
   return temp;
 }
 
-float vecsum(const std::vector<float>& a) {
-  float temp = 0;
+long double vecsum(const std::vector<long double>& a) {
+  long double temp = 0;
   for (int j=0; j<a.size(); j++) {
     temp += a[j];
   }

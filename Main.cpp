@@ -4,7 +4,7 @@
 #include "Brain.h"
 #include "Trainer.h"
 #include "Neuron.h"
-#include "helper.h"
+#include "Helper.h"
 
 using namespace::std;
 
@@ -22,9 +22,9 @@ int main()
   int noutputs = 2;
   
   //accuracy of the desired output
-  float accuracy = 0.001;
+  long double accuracy = 0.001;
   //learning rate of the brain
-  float learningRate = 10;
+  long double learningRate = 20;
   
   //constructing and initializing the brain
   Brain Jarvis(nneurons,ninputs,noutputs);
@@ -32,8 +32,8 @@ int main()
   Trainer TonyStark(learningRate,accuracy);
   
   //store the demanded input and the desired output
-  std::vector<float> demandedInput;
-  std::vector<float> desiredOutput;
+  std::vector<long double> demandedInput;
+  std::vector<long double> desiredOutput;
   
   //set up the dataset
   //set 1
@@ -83,8 +83,8 @@ int main()
   cout << "\n\n=> Testing the brain:\n";
   
   //init in- and output vectors
-  vector<float> input;
-  vector<float> output;
+  vector<long double> input;
+  vector<long double> output;
   
   //we can now test the brain
   //test 1

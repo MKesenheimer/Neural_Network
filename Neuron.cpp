@@ -27,7 +27,7 @@ Neuron::Neuron(int ident, int nninputs, int nnoutputs) {
   theta = 0;
 }
 
-void Neuron::setWeights(const std::vector<float>& ww) {
+void Neuron::setWeights(const std::vector<long double>& ww) {
   w = ww;
   #ifdef DEBUGV2
     std::cout<<"weights of neuron "<<identifier<<":\n";
@@ -37,19 +37,19 @@ void Neuron::setWeights(const std::vector<float>& ww) {
   #endif
 }
 
-void Neuron::setThreshold(float ttheta) {
+void Neuron::setThreshold(long double ttheta) {
   theta = ttheta;
   #ifdef DEBUGV2
     std::cout<<"threshold of neuron "<<identifier<<": "<<theta<<"\n";
   #endif
 }
 
-std::vector<float> Neuron::calculateOutput(const std::vector<float>& xx) {
+std::vector<long double> Neuron::calculateOutput(const std::vector<long double>& xx) {
   
   //set inputs
   i = xx;
   //transfer function
-  float temp = 0;
+  long double temp = 0;
   for (int n=0; n<ninputs; n++) {
     temp += w[n]*i[n];
   }
@@ -99,8 +99,8 @@ std::string Neuron::getNeuronName() {
   return temp;
 }
 
-std::vector<float> Neuron::getParams() {
-  std::vector<float> params;
+std::vector<long double> Neuron::getParams() {
+  std::vector<long double> params;
   //1 threshold and "ninputs" weights
   params.reserve(ninputs+1);
   

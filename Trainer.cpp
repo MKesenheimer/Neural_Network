@@ -2,11 +2,12 @@
 #include <sstream>
 #include <stdlib.h>
 #include <algorithm>
+#include <time.h>
 
 #include "Trainer.h"
-#include "helper.h"
+#include "Helper.h"
 
-Trainer::Trainer(float rate, float accuracy) {
+Trainer::Trainer(long double rate, long double accuracy) {
   //set the learning rate
   learningRate = rate;
   //set the small number for numerical derivatives
@@ -20,8 +21,6 @@ Trainer::Trainer(float rate, float accuracy) {
   numberOfSets = 0;
 }
 
-//When you want to teach another dataset, you should only make
-//changes in this function, or you can provide another dataset i.e. with setData2()
 void Trainer::setData1() {
   //this dataset works only with a neural network
   //with three inputs and one output, but it is easily
@@ -32,8 +31,8 @@ void Trainer::setData1() {
   }
 
   //store here the input and the desired output
-  std::vector<float> demandedInput;
-  std::vector<float> desiredOutput;
+  std::vector<long double> demandedInput;
+  std::vector<long double> desiredOutput;
   
   //set up the dataset
   demandedInput.clear();
@@ -61,14 +60,14 @@ void Trainer::setData1() {
   addDataSet(demandedInput,desiredOutput);
 }
 
-float Trainer::costFunction(const std::vector<float>& allParams) {
-  float delta = 0;
-  float costFct = 0;
-  std::vector<float> output;
+long double Trainer::costFunction(const std::vector<long double>& allParams) {
+  long double delta = 0;
+  long double costFct = 0;
+  std::vector<long double> output;
   output.reserve(theBrain->numberOfOutputs());
   
   //save old parameters of the brain to restore the old brain later:
-  std::vector<float> oldParams;
+  std::vector<long double> oldParams;
   oldParams = theBrain->getAllParameters();
   
   //calculate the output of the brain with the given parameters
@@ -80,11 +79,10 @@ float Trainer::costFunction(const std::vector<float>& allParams) {
     //sum over the norm squared of the outputs and desired outputs
     delta += norm(subtract(allDesiredOutputs[n],output));
   }
-  costFct = delta/(2*numberOfSets);
+  //costFct = delta/(2*numberOfSets);
+  costFct = delta/2;
   
   #ifdef DEBUGV1
-    //std::cout<<"\tnumber of sets:\t\t"<<numberOfSets<<"\n";
-    //std::cout<<"\tdelta total  :\t\t"<<delta<<"\n";
     std::cout<<"\tcost function:\t\t"<<costFct<<"\n";
   #endif
   
@@ -99,6 +97,8 @@ void Trainer::train(Brain* brain) {
   theBrain = brain;
   
   std::cout<<"=> Training the brain:\n";
+  time_t start,end;
+  time (&start);
   
   //choose here which data the brain should learn
   //the user can provide an other dataset with the function addDataSet(...)
@@ -123,13 +123,13 @@ void Trainer::train(Brain* brain) {
   bool optimized = false;
   while (!optimized) {
     //load all the parameters of the brain
-    std::vector<float> allParams;
+    std::vector<long double> allParams;
     //the original parameters
     allParams = theBrain->getAllParameters();
     //these are the parameters shifted by h
-    std::vector<float> allParamsh;
+    std::vector<long double> allParamsh;
     //the new parameters:
-    std::vector<float> newParams;
+    std::vector<long double> newParams;
   
     //if the output is good enough
     if (costFunction(allParams)<eps) {
@@ -141,9 +141,9 @@ void Trainer::train(Brain* brain) {
       //gradient C = ( (C(v1+h,v2,...,vn)-C(v1,v2,...,vn))/h, (C(v1,v2+h,...,vn)-C(v1,v2,...,vn))/h, ... )
       //           = (  (cfh1-cf)/h, (cfh2-cf)/h, ..., (cfhn-cf)/h) )
       //the costfunction with the original parameters
-      float cf = costFunction(allParams);
+      long double cf = costFunction(allParams);
       //the costfunction with parameters shifted by h
-      float cfh;
+      long double cfh;
       
       gradientC.clear();
       for (int index = 0; index<allParams.size(); index++) {
@@ -153,7 +153,7 @@ void Trainer::train(Brain* brain) {
         }
         cfh = costFunction(allParamsh);
         //derivative of costfunction
-        float deriv = (cfh-cf)/h;
+        long double deriv = (cfh-cf)/h;
         gradientC.push_back(deriv);
       }
   
@@ -187,11 +187,14 @@ void Trainer::train(Brain* brain) {
       theBrain->setAllParameters(newParams);
     }
   }
-  
+
+  time (&end);
+  double dif = difftime (end,start);
   std::cout<<"=> Brain is now trained.\n";
+  printf ("Elapsed time is %.2lf seconds.\n", dif );
 }
 
-void Trainer::addDataSet(const std::vector<float>& demandedInputs, const std::vector<float>& desiredOutputs) {
+void Trainer::addDataSet(const std::vector<long double>& demandedInputs, const std::vector<long double>& desiredOutputs) {
   allDemandedInputs.push_back(demandedInputs);
   allDesiredOutputs.push_back(desiredOutputs);
   numberOfSets++;
