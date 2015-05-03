@@ -10,7 +10,7 @@ FLAGS   = -g
 LDFLAGS =
 PREPRO  =
 ##verbose level 1
-DEBUG   = -D DEBUGV1
+#DEBUG   = -D DEBUGV1
 ##verbose level 2
 #DEBUG  += -D DEBUGV2
 ##verbose level 3
