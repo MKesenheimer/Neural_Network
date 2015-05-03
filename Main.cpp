@@ -99,7 +99,7 @@ int main()
   //calculate the output
   output = Jarvis.output(input);
   for (int i=0; i<output.size(); i++) {
-    cout << "\tJarvis says  "<<i<<":\t\t"<<output[i] << "\n";
+    cout << "\tJarvis output "<<i<<":\t"<<output[i] << "\n";
   }
   cout<<endl;
   
@@ -115,7 +115,7 @@ int main()
   //calculate the output
   output = Jarvis.output(input);
   for (int i=0; i<output.size(); i++) {
-    cout << "\tJarvis says  "<<i<<":\t\t"<<output[i] << "\n";
+    cout << "\tJarvis output "<<i<<":\t"<<output[i] << "\n";
   }
   cout<<endl;
   
@@ -131,7 +131,7 @@ int main()
   //calculate the output
   output = Jarvis.output(input);
   for (int i=0; i<output.size(); i++) {
-    cout << "\tJarvis says  "<<i<<":\t\t"<<output[i] << "\n";
+    cout << "\tJarvis output "<<i<<":\t"<<output[i] << "\n";
   }
   cout<<endl;
   
@@ -147,7 +147,7 @@ int main()
   //calculate the output
   output = Jarvis.output(input);
   for (int i=0; i<output.size(); i++) {
-    cout << "\tJarvis says  "<<i<<":\t\t"<<output[i] << "\n";
+    cout << "\tJarvis output "<<i<<":\t"<<output[i] << "\n";
   }
   cout<<endl;
   
