@@ -26,9 +26,9 @@ int main()
   //learning rate of the brain
   float learningRate = 10;
   
-  //constructing and init the brain
+  //constructing and initializing the brain
   Brain Jarvis(nneurons,ninputs,noutputs);
-  //constructing the trainer and telling him which brain he should train
+  //constructing and initializing the trainer
   Trainer TonyStark(learningRate,accuracy);
   
   //store the demanded input and the desired output
