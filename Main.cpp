@@ -24,7 +24,7 @@ int main()
   //constructing and init the brain
   Brain Jarvis(nneurons,ninputs,noutputs);
   //constructing the trainer and telling him which brain he should train
-  Trainer TonyStark(&Jarvis);
+  Trainer TonyStark(10,0.001);
   
   //store the demanded input and the desired output
   std::vector<float> demandedInput;
@@ -73,7 +73,7 @@ int main()
   TonyStark.addDataSet(demandedInput,desiredOutput);
   
   //now all the data is provided, train the brain
-  TonyStark.train();
+  TonyStark.train(&Jarvis);
   
   cout << "\n\n=> Testing the brain:\n";
   

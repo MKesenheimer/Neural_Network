@@ -7,9 +7,9 @@
 class Trainer {
   public:
     //the onstructor saves the brain which should get trained
-    Trainer(Brain* brain);
+    Trainer(float rate, float accuracy);
     //function to train the brain
-    void train();
+    void train(Brain* brain);
     //function to determine the training progress
     //input parameters are all weights and the thresholds
     float costFunction(const std::vector<float>& allParams);

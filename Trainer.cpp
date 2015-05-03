@@ -6,15 +6,13 @@
 #include "Trainer.h"
 #include "helper.h"
 
-Trainer::Trainer(Brain* brain) {
-  //which brain should get trained?
-  theBrain = brain;
+Trainer::Trainer(float rate, float accuracy) {
   //set the learning rate
-  learningRate = 10;
+  learningRate = rate;
   //set the small number for numerical derivatives
   h = 0.0001;
   //accuracy
-  eps = 0.001;
+  eps = accuracy;
   
   //reset the global variables
   allDemandedInputs.clear();
@@ -96,7 +94,10 @@ float Trainer::costFunction(const std::vector<float>& allParams) {
   return costFct;
 }
 
-void Trainer::train() {
+void Trainer::train(Brain* brain) {
+  //which brain should get trained?
+  theBrain = brain;
+  
   std::cout<<"=> Training the brain:\n";
   
   //choose here which data the brain should learn
