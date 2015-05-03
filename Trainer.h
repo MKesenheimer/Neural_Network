@@ -15,6 +15,8 @@ class Trainer {
     float costFunction(const std::vector<float>& allParams);
     //set the dataset which the brain should learn
     void setData1();
+    //add a dataset
+    void addDataSet(const std::vector<float>& demandedInputs, const std::vector<float>& desiredOutputs);
     
   private:
     //this is the dataset we want to teach the brain

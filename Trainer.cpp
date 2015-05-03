@@ -15,6 +15,11 @@ Trainer::Trainer(Brain* brain) {
   h = 0.0001;
   //accuracy
   eps = 0.001;
+  
+  //reset the global variables
+  allDemandedInputs.clear();
+  allDesiredOutputs.clear();
+  numberOfSets = 0;
 }
 
 //When you want to teach another dataset, you should only make
@@ -31,14 +36,6 @@ void Trainer::setData1() {
   //store here the input and the desired output
   std::vector<float> demandedInput;
   std::vector<float> desiredOutput;
-
-  demandedInput.reserve(theBrain->numberOfInputs());
-  desiredOutput.reserve(theBrain->numberOfOutputs());
-  
-  //reset the global variables
-  allDemandedInputs.clear();
-  allDesiredOutputs.clear();
-  numberOfSets = 0;
   
   //set up the dataset
   demandedInput.clear();
@@ -47,9 +44,7 @@ void Trainer::setData1() {
   demandedInput.push_back(0);
   demandedInput.push_back(0);
   desiredOutput.push_back(0);
-  allDemandedInputs.push_back(demandedInput);
-  allDesiredOutputs.push_back(desiredOutput);
-  numberOfSets++;
+  addDataSet(demandedInput,desiredOutput);
   
   demandedInput.clear();
   desiredOutput.clear();
@@ -57,9 +52,7 @@ void Trainer::setData1() {
   demandedInput.push_back(1);
   demandedInput.push_back(0);
   desiredOutput.push_back(0.5);
-  allDemandedInputs.push_back(demandedInput);
-  allDesiredOutputs.push_back(desiredOutput);
-  numberOfSets++;
+  addDataSet(demandedInput,desiredOutput);
   
   demandedInput.clear();
   desiredOutput.clear();
@@ -67,9 +60,7 @@ void Trainer::setData1() {
   demandedInput.push_back(0);
   demandedInput.push_back(1);
   desiredOutput.push_back(1);
-  allDemandedInputs.push_back(demandedInput);
-  allDesiredOutputs.push_back(desiredOutput);
-  numberOfSets++;
+  addDataSet(demandedInput,desiredOutput);
 }
 
 float Trainer::costFunction(const std::vector<float>& allParams) {
@@ -93,7 +84,7 @@ float Trainer::costFunction(const std::vector<float>& allParams) {
   }
   costFct = delta/(2*numberOfSets);
   
-  #ifdef DEBUGT
+  #ifdef DEBUGV1
     //std::cout<<"\tnumber of sets:\t\t"<<numberOfSets<<"\n";
     //std::cout<<"\tdelta total  :\t\t"<<delta<<"\n";
     std::cout<<"\tcost function:\t\t"<<costFct<<"\n";
@@ -109,18 +100,22 @@ void Trainer::train() {
   std::cout<<"=> Training the brain:\n";
   
   //choose here which data the brain should learn
-  setData1();
+  //the user can provide an other dataset with the function addDataSet(...)
+  //if no dataset is present, use the default one:
+  if (allDemandedInputs.size() == 0) {
+    setData1();
+  }
   
   //print out dataset
-  std::cout<<"=> Dataset:\n";
+  std::cout<<"=> Dataset:";
   for (int n=0; n<numberOfSets; n++) {
+    std::cout<<"\n";
     for (int i=0; i<allDemandedInputs[n].size(); i++) {
       std::cout << "\tdemanded input "<<i<<":\t"<<allDemandedInputs[n][i] << "\n";
     }
     for (int i=0; i<(theBrain->numberOfOutputs()); i++) {
       std::cout << "\tdesired output "<<i<<":\t"<<allDesiredOutputs[n][i] << "\n";
     }
-    std::cout<<"\n";
   }
   
   //does the output meets the requirements?
@@ -161,7 +156,7 @@ void Trainer::train() {
         gradientC.push_back(deriv);
       }
   
-      #ifdef DEBUGQ
+      #ifdef DEBUGV3
         for (int i = 0; i<gradientC.size(); i++) {
           std::cout<<"gradientC["<<i<<"]: "<<gradientC[i]<<"\n";
         }
@@ -171,7 +166,7 @@ void Trainer::train() {
       for (int index = 0; index<allParams.size(); index++) {
         newParams.push_back(allParams[index]-learningRate*gradientC[index]);
       }
-      #ifdef DEBUGQ
+      #ifdef DEBUGV3
         for (int i=0; i<allParamsh.size(); i++) {
           std::cout<<"params["<<i<<"]: "<<allParams[i]<<"\n";
           std::cout<<"paramsh["<<i<<"]: "<<allParamsh[i]<<"\n";
@@ -193,4 +188,10 @@ void Trainer::train() {
   }
   
   std::cout<<"=> Brain is now trained.\n";
+}
+
+void Trainer::addDataSet(const std::vector<float>& demandedInputs, const std::vector<float>& desiredOutputs) {
+  allDemandedInputs.push_back(demandedInputs);
+  allDesiredOutputs.push_back(desiredOutputs);
+  numberOfSets++;
 }

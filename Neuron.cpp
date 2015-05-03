@@ -4,7 +4,7 @@
 #include "Neuron.h"
 
 Neuron::Neuron(int ident, int nninputs, int nnoutputs) {
-  #ifdef DEBUG
+  #ifdef DEBUGV2
     std::cout<<"Constructing neuron "<<ident<<" with ";
     std::cout<<nninputs<<" input(s) and "<<nnoutputs<<" output(s)."<<"\n";
   #endif
@@ -29,7 +29,7 @@ Neuron::Neuron(int ident, int nninputs, int nnoutputs) {
 
 void Neuron::setWeights(const std::vector<float>& ww) {
   w = ww;
-  #ifdef DEBUG
+  #ifdef DEBUGV2
     std::cout<<"weights of neuron "<<identifier<<":\n";
     for (int i=0; i<ninputs; i++) {
       std::cout<<"i"<<i<<": "<<w[i]<<"\n";
@@ -39,7 +39,7 @@ void Neuron::setWeights(const std::vector<float>& ww) {
 
 void Neuron::setThreshold(float ttheta) {
   theta = ttheta;
-  #ifdef DEBUG
+  #ifdef DEBUGV2
     std::cout<<"threshold of neuron "<<identifier<<": "<<theta<<"\n";
   #endif
 }
@@ -114,7 +114,7 @@ std::vector<float> Neuron::getParams() {
 }
 
 Neuron::~Neuron() {
-  #ifdef DEBUG
+  #ifdef DEBUGV3
     std::cout<<"Destructing neuron "<<identifier<<"\n";
   #endif  
 }

@@ -8,8 +8,13 @@ COMPILER = g++ -std=c++11
 ## Flags
 FLAGS   = -g
 LDFLAGS =
-PREPRO  = 
-DEBUG   = -D DEBUGT
+PREPRO  =
+##verbose level 1
+#DEBUG   = -D DEBUGV1
+##verbose level 2
+#DEBUG  += -D DEBUGV2
+##verbose level 3
+#DEBUG  += -D DEBUGV3
 OPT     = -O2
 WARN    =
 
