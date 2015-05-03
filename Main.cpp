@@ -21,10 +21,15 @@ int main()
   //the number of output values
   int noutputs = 2;
   
+  //accuracy of the desired output
+  float accuracy = 0.001;
+  //learning rate of the brain
+  float learningRate = 10;
+  
   //constructing and init the brain
   Brain Jarvis(nneurons,ninputs,noutputs);
   //constructing the trainer and telling him which brain he should train
-  Trainer TonyStark(10,0.001);
+  Trainer TonyStark(learningRate,accuracy);
   
   //store the demanded input and the desired output
   std::vector<float> demandedInput;
