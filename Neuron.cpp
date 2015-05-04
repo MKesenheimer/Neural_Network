@@ -101,7 +101,7 @@ std::string Neuron::getNeuronName() {
 
 std::vector<long double> Neuron::getParams() {
   std::vector<long double> params;
-  //1 threshold and "ninputs" weights
+  //the return value consists of "ninputs" weights and 1 threshold
   params.reserve(ninputs+1);
   
   for (int i=0; i<ninputs; i++) {
