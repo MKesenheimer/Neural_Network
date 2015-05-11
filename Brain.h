@@ -52,6 +52,14 @@ class Brain {
     std::vector<Neuron> outputLayer;
     //vector of connections, whose entries points to the next input iinput of neuron ineur
     std::string connections;
+   
+    
+    //store here for a given neuron identifier and given input number the
+    //identifier of the connected neuron
+    //std::vector< std::vector<std::string> > connectedNeurons;
+    //store here for a given neuron identifier and given input number the
+    //number of the connected output
+    //std::vector< std::vector<std::string> > connectedOutputs;
 };
 
 #endif

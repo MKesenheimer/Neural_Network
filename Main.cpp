@@ -15,7 +15,7 @@ int main()
   cout << "==============================================\n\n";
   
   //the number of active neurons
-  int nneurons = 5;
+  int nneurons = 15;
   //the number of input values
   int ninputs = 4;
   //the number of output values

@@ -121,6 +121,13 @@ void Brain::connectNeurons(Neuron *neur1, int output, Neuron *neur2, int input) 
   #ifdef DEBUGV3
     std::cout<<connections<<"\n";
   #endif
+  
+  //new
+  neur2->establishConnection(input, strneur1, output);
+  #ifdef DEBUGV2
+    std::cout<<"Neuron "<<strneur2<<" is connected on input i"<<input<<" with ";
+    std::cout<<neur2->getConnectedNeuron(input)<<" at output "<<neur2->getConnectedOutput(input)<<"\n";
+  #endif
 }
 
 std::vector<long double> Brain::output(const std::vector<long double>& x) {
@@ -167,7 +174,6 @@ std::vector<long double> Brain::output(const std::vector<long double>& x) {
     //push the output of the n-th neuron into vector out
     out.push_back(outtemp);
   }
-
   
   bool finished = false;
   
@@ -194,9 +200,9 @@ std::vector<long double> Brain::output(const std::vector<long double>& x) {
         #endif
         //look if we can find the current neuron as target neuron in the connections list
         //(the next character is ",i")
-        std::size_t posCNeur = connections.find(strCNeur+",i");
+        std::size_t posCNeur = 0; //connections.find(strCNeur+",i");
         if (posCNeur==std::string::npos) {
-          #ifdef DEBUGV3
+          #ifdef DEBUGV1
             std::cout<<" and could not be found as target in string connections. Skip.\n";
           #endif
           calculateCNeur = false;
@@ -349,7 +355,6 @@ std::vector<long double> Brain::output(const std::vector<long double>& x) {
   return totalOut;
 }
 
-//TODO: This function uses the most CPU time. Optimize this!
 std::string Brain::getConnectedNeuron(Neuron *neur, int iinput){
   
   //check if iinput was set correctly
@@ -358,78 +363,20 @@ std::string Brain::getConnectedNeuron(Neuron *neur, int iinput){
     exit(1);
   }
   
-  //definitions
-  std::string targetname = neur->getNeuronName();
-  std::string strConnected = "";
-  std::string strcc = ""; // current connection
-  int counter = 0;
-  
-  //search for the connected neurons and store them in string strConnected
-  //if 0<=iinput<numberOfInputs return only the neuron that is connected
-  //to the iinput-th input
-  std::size_t lastpos = 1;
-  for (int j=0; j<(neur->numberOfInputs()); j++) {
-    std::size_t targetpos = connections.find(targetname+",i", lastpos);
-    std::size_t pointerpos1 = connections.find("<- (", targetpos);
-    std::size_t pointerpos2 = connections.find(",o", targetpos);
-    lastpos = pointerpos2;
-    #ifdef DEBUGV3
-      std::cout<<"targetpos "<<targetpos<<"\n";
-      std::cout<<"pointerpos1 "<<pointerpos1<<"\n";
-      std::cout<<"pointerpos2 "<<pointerpos2<<"\n";
-    #endif
-    if(!(targetpos==std::string::npos
-         || pointerpos1==std::string::npos
-         || pointerpos2==std::string::npos)){
-      strcc = connections.substr(pointerpos1+4,pointerpos2-pointerpos1-4);
-      strConnected += strcc  + ", ";
-      //return the iinput-th connection of current neuron
-      if (iinput == counter) {
-        return strcc;
-      }
-      counter++;
+  //if iinput is negative, return all neurons that are conected to this neuron
+  if (iinput<0) {
+    std::string strNeurons = "";
+    for (int i=0; i<neur->numberOfInputs(); i++) {
+    strNeurons += neur->getConnectedNeuron(i);
     }
+    return strNeurons;
   }
-  
-  if (counter<(neur->numberOfInputs())) {
-    std::cout<<"\nError: neuron "<<targetname<<" is not fully connected."<<"\n";
-    exit(1);
-  }
-  
-  //if iinput is negativ, return the whole string:
-  return strConnected;
+
+  return neur->getConnectedNeuron(iinput);
 }
 
-//TODO: This function uses the most CPU time. Optimize this!
-std::string Brain::getConnectedOutput(Neuron *neur, int iinput){
-  std::string strName1 = neur->getNeuronName();
-  std::string strName2 = getConnectedNeuron(neur, iinput);
-  std::string strInput = "i" + std::to_string(iinput);
-  std::string strFind = "(" + strName1 + "," + strInput + ") <- (" + strName2 + ",";
-  std::string strOutput = "";
-  
-  #ifdef DEBUGV3
-    std::cout<<"name of neuron 1 (target): "<<strName1<<"\n";
-    std::cout<<"name of input of neuron 1: "<<strInput<<"\n";
-    std::cout<<"name of neuron 2: "<<strName2<<"\n";
-    std::cout<<"connections list: "<<connections<<"\n";
-    std::cout<<"string to find: "<<strFind<<"\n";
-  #endif
-  
-  std::size_t pos1 = connections.find(strFind);
-  std::size_t pos2 = connections.find("),",pos1);
-  if (pos1==std::string::npos) {
-    std::cout<<"Error in getConnectedOutput: string not found: "<<strFind<<"\n";
-    exit(1);
-  } else {
-    pos1 += strFind.length();
-    strOutput = connections.substr(pos1,pos2-pos1);
-    #ifdef DEBUGV3
-      std::cout<<"output "<<strOutput<<" of neuron "<<strName2<<" is connected to input "<<strInput<<" of neuron "<<strName1<<".\n";
-    #endif
-  }
-  
-  return strOutput;
+std::string Brain::getConnectedOutput(Neuron *neur, int iinput) {
+  return neur->getConnectedOutput(iinput);
 }
 
 int Brain::nameToInt(std::string name){
