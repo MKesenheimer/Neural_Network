@@ -379,6 +379,8 @@ std::string Brain::getConnectedOutput(Neuron *neur, int iinput) {
   return neur->getConnectedOutput(iinput);
 }
 
+//TODO: diese Funktion optimieren! Am besten gar nicht mit strings arbeiten
+//sondern nur noch mit integers.
 int Brain::nameToInt(std::string name){
   std::string temp;
   int a;

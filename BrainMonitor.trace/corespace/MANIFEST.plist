@@ -4,10 +4,13 @@
 <dict>
 	<key>paths</key>
 	<array>
+		<string>run2/core/core-config</string>
+		<string>run2/core/uniquing</string>
+		<string>run2/core/table-manager</string>
 		<string>currentRun/core/uniquing</string>
-		<string>run1/core/table-manager</string>
 		<string>run1/core/core-config</string>
 		<string>run1/core/uniquing</string>
+		<string>run1/core/table-manager</string>
 	</array>
 </dict>
 </plist>
