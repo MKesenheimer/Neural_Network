@@ -17,6 +17,9 @@ Neuron::Neuron(int ident, int nninputs, int nnoutputs) {
   i.reserve(ninputs);
   o.reserve(noutputs);
   
+  connectedN.reserve(ninputs);
+  connectedO.reserve(ninputs);
+  
   //if a Neuron is initialized, it is inactive first
   for (int n = 0; n<ninputs; n++) {
     w[n] = 0;
@@ -25,6 +28,9 @@ Neuron::Neuron(int ident, int nninputs, int nnoutputs) {
     o[n] = 0;
   }
   theta = 0;
+  
+  //when initialized the outputs of this neuron were never calculated
+  finished = false;
 }
 
 void Neuron::setWeights(const std::vector<long double>& ww) {
@@ -111,6 +117,51 @@ std::vector<long double> Neuron::getParams() {
   params.push_back(theta);
   
   return params;
+}
+
+void Neuron::establishConnection(int input, std::string neuronName, int output) {
+  std::string temp;
+  temp = "o" + std::to_string(output);
+  connectedO.push_back(temp);
+  connectedN.push_back(neuronName);
+  pointerToIndex.push_back(input); //the vector pointerToIndex grows in the same way as the connectedO/N vectors
+}
+
+std::string Neuron::getConnectedNeuron(int input) {
+  return connectedN[reversePointer(input)];
+}
+
+std::string Neuron::getConnectedOutput(int input) {
+  return connectedO[reversePointer(input)];
+}
+
+int Neuron::reversePointer(int i) {
+  int position;
+  for (position = 0; position<pointerToIndex.size(); position++) {
+    if(pointerToIndex[position]==i) {
+      return position; //the rest is never reached
+    }
+  }
+  if (position>=pointerToIndex.size()) {
+    std::cout<<"error in Neuron: input i"<<i<<" could not be found in vector pointerToIndex.\n";
+    for (int k = 0; k<pointerToIndex.size(); k++) {
+      std::cout<<"pointerToIndex["<<k<<"]: "<<pointerToIndex[k]<<"\n";
+    }
+    exit(1);
+  }
+  return -999;
+}
+
+bool Neuron::isfinished() {
+  return finished;
+}
+
+void Neuron::setfinished() {
+  finished = true;
+}
+
+void Neuron::unsetfinished() {
+  finished = false;
 }
 
 Neuron::~Neuron() {

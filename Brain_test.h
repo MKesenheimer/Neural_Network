@@ -6,21 +6,23 @@
 
 class Brain {
   public:
+  
+    /*** Basic functions ***/
     //construct Brain with number of neurons and number of layers
     Brain(int nneur, int ninputs, int noutputs);
     void initBrain();
     ~Brain();
     
+    /*** functions which operate on the Neurons ***/
     //calculates the output
     std::vector<long double> output(const std::vector<long double>& x);
     //connects output of neur1 with input of neuron neur2
     void connectNeurons(Neuron *neur1, int output, Neuron *neur2, int input);
     //extract the neuron that is connected on input iinput of neuron neur
-    std::string getConnectedNeuron(Neuron *neur, int iinput);
+    std::string getConnectedNeuronName(Neuron *neur, int iinput);
+    Neuron* getConnectedNeuron(Neuron *neur, int iinput);
     //extract the output of the neuron that is connected on input iinput of neuron neur
     std::string getConnectedOutput(Neuron *neur, int iinput);
-    //takes neuron name, input or output name and returns integer (example: n0 -> 0, i1 -> 1, o2 -> 2)
-    int nameToInt(std::string name);
     
     //return the number of inputs, outputs and neurons
     int numberOfInputs();
@@ -41,6 +43,14 @@ class Brain {
     std::vector<long double> getAllParameters();
     //the vector params must have the same layout as the vector that is returned by getAllParameters()
     void setAllParameters(const std::vector<long double>& params);
+    
+    /*** helper functions ***/
+    //takes neuron name, input or output name and returns pointer to Neuron
+    //This function is needed to acces the function Neuron::isfinished(). In Brain we work mainly with
+    //neuron names, so a conversion from neuron name to Neuron* is needed.
+    Neuron* nameToNeuron(std::string name);
+    //takes neuron name, input or output name and returns integer (example: n0 -> 0, i1 -> 1, o2 -> 2)
+    int nameToInt(std::string name);
     
   private:
     int nneurons;
