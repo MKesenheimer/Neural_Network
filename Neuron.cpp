@@ -96,12 +96,6 @@ int Neuron::getIdentifier(){
   return identifier;
 }
 
-std::string Neuron::getNeuronName() {
-  std::string temp;
-  temp = "n" + std::to_string(getIdentifier());
-  return temp;
-}
-
 std::vector<long double> Neuron::getParams() {
   std::vector<long double> params;
   //the return value consists of "ninputs" weights and 1 threshold
@@ -116,19 +110,17 @@ std::vector<long double> Neuron::getParams() {
   return params;
 }
 
-void Neuron::establishConnection(int input, std::string neuronName, int output) {
-  std::string temp;
-  temp = "o" + std::to_string(output);
-  connectedO.push_back(temp);
+void Neuron::establishConnection(int input, int neuronName, int output) {
+  connectedO.push_back(output);
   connectedN.push_back(neuronName);
   pointerToIndex.push_back(input); //the vector pointerToIndex grows in the same way as the connectedO/N vectors
 }
 
-std::string Neuron::getConnectedNeuron(int input) {
+int Neuron::getConnectedNeuron(int input) {
   return connectedN[reversePointer(input)];
 }
 
-std::string Neuron::getConnectedOutput(int input) {
+int Neuron::getConnectedOutput(int input) {
   return connectedO[reversePointer(input)];
 }
 

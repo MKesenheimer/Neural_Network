@@ -13,20 +13,19 @@ class Neuron {
     int numberOfInputs();
     int numberOfOutputs();
     int getIdentifier();
-    std::string getNeuronName();
     //return the parameters of this neuron (weights, threshold)
     std::vector<long double> getParams();
     //establish connection to another neuron:
     //tell this function which input of current neuron
     //should be connected with output of neuron with name "neuronName"
-    void establishConnection(int input, std::string neuronName, int output);
+    void establishConnection(int input, int neuronName, int output);
     //tell at which position of the vectors connectedN and connectedI
     //the dataset with index i could be found
     int reversePointer(int i);
     //return connected neuron which is connected to input
-    std::string getConnectedNeuron(int input);
+    int getConnectedNeuron(int input);
     //return connected output which is connected to input
-    std::string getConnectedOutput(int input);
+    int getConnectedOutput(int input);
 
   private:
     int identifier;         //"name" of neuron
@@ -37,8 +36,8 @@ class Neuron {
     std::vector<long double> o;   //output
     std::vector<long double> w;   //weights
     std::vector<int> pointerToIndex;     //this vector points to the entries of connectedN and connectedI
-    std::vector<std::string> connectedN; //the input with index i is connected to which neuron?
-    std::vector<std::string> connectedO; //the input with index i is connected to which output?
+    std::vector<int> connectedN; //the input with index i is connected to which neuron?
+    std::vector<int> connectedO; //the input with index i is connected to which output?
 };
 
 #endif

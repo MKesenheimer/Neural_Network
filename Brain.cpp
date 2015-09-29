@@ -14,7 +14,6 @@ Brain::Brain(int nneur, int ninp, int noutp){
   nneurons = nneur;
   ninputs = ninp;
   noutputs = noutp;
-  connections = "";
   
   neuron.reserve(nneurons);
   inputLayer.reserve(ninputs);
@@ -83,50 +82,13 @@ void Brain::initBrain(){
 
 
 void Brain::connectNeurons(Neuron *neur1, int output, Neuron *neur2, int input) {
-  std::string strneur1, strneur2;
-  strneur1 = neur1->getNeuronName();
-  strneur2 = neur2->getNeuronName();
+  int nneur1;
+  nneur1 = neur1->getIdentifier();
+  neur2->establishConnection(input, nneur1, output);
   
   #ifdef DEBUGV2
-    std::cout<<"Connecting output "<<output<<" of Neuron "<<strneur1;
-    std::cout<<" with input "<<input<<" of Neuron "<<strneur2<<".\n";
-  #endif
-  
-  //TODO: Überprüfe ob auch die Aus- und Eingänge vorhanden sind
-  // die miteinander verbunden werden sollen (output<=numberofOutputs usw.)
-  //außerdem ob auch die Neuronen da sind, die verbunden werden sollen
-
-  //int to string
-  std::string strfromtuple, strtotuple, strconnection;
-  strfromtuple  = "("+ strneur1 + ",o" + std::to_string(output) + ")";
-  strtotuple    = "("+ strneur2 + ",i" + std::to_string(input) + ")";
-  strconnection = strtotuple + " <- " + strfromtuple + ", ";
-  
-  //Check if the connection is already in use (every tuple must occur only once)
-  //if so, throw error and ignore connection.
-  bool connectionused = false;
-  std::size_t found1 = connections.find(strfromtuple);
-  std::size_t found2 = connections.find(strtotuple);
-  if (found1!=std::string::npos) {
-    std::cout << "Bad connection. Connection from "<< strfromtuple <<" already used.\n";
-    connectionused = true;
-  } else if(found2!=std::string::npos) {
-    std::cout << "Bad connection. Connection to "<< strtotuple <<" already used.\n";
-    connectionused = true;
-  }
-  if (!connectionused) {
-    connections += strconnection;
-  }
-  
-  #ifdef DEBUGV3
-    std::cout<<connections<<"\n";
-  #endif
-  
-  //new
-  neur2->establishConnection(input, strneur1, output);
-  #ifdef DEBUGV2
-    std::cout<<"Neuron "<<strneur2<<" is connected on input i"<<input<<" with ";
-    std::cout<<neur2->getConnectedNeuron(input)<<" at output "<<neur2->getConnectedOutput(input)<<"\n";
+  std::cout<<"Neuron n"<<neur2->getIdentifier()<<" is connected on input i"<<input<<" with n";
+  std::cout<<neur2->getConnectedNeuron(input)<<" at output o"<<neur2->getConnectedOutput(input)<<"\n";
   #endif
 }
 
@@ -155,7 +117,8 @@ std::vector<long double> Brain::output(const std::vector<long double>& x) {
   std::vector<long double> outtemp;
   //to calculate and store the input of current neuron
   std::vector<long double> intemp;
-  std::string finishedNeurons = ""; //store here the processed neurons
+  std::vector<int> finishedNeurons; //store here the processed neurons
+  finishedNeurons.clear();
   int numberOfFinishedNeurons = 0;
 
   //first go through the neurons in the inputLayer...
@@ -166,11 +129,8 @@ std::vector<long double> Brain::output(const std::vector<long double>& x) {
     //calculate the output of the n-th neuron
     outtemp = inputLayer[n].calculateOutput(in);
     //store the number of the calculated neuron in string finishedNeurons
-    finishedNeurons += inputLayer[n].getNeuronName() + ", ";
+    finishedNeurons.push_back(inputLayer[n].getIdentifier());
     numberOfFinishedNeurons++;
-    #ifdef DEBUGV3
-      std::cout<<"finished neurons: "<<finishedNeurons<<"\n";
-    #endif
     //push the output of the n-th neuron into vector out
     out.push_back(outtemp);
   }
@@ -182,14 +142,20 @@ std::vector<long double> Brain::output(const std::vector<long double>& x) {
     for (int n=0; n<nneurons; n++) {
       bool calculateCNeur = true;
       //name of current neuron
-      std::string strCNeur = neuron[n].getNeuronName();
-      #ifdef DEBUGV3
-        std::cout<<"current neuron "<<strCNeur<<"\n";
+      int nCNeur = neuron[n].getIdentifier();
+      #ifdef DEBUGV2
+        std::cout<<"current neuron "<<nCNeur<<"\n";
       #endif
       //is current neuron in the finishedNeurons list?
       //if so, next neuron
-      std::size_t found = finishedNeurons.find(strCNeur);
-      if (found!=std::string::npos) {
+      bool foundFinished = false;
+      for(int m=0; m<numberOfFinishedNeurons; m++) {
+        if(finishedNeurons[m]==nCNeur) {
+          foundFinished = true;
+          m = numberOfFinishedNeurons; // escape the for-loop
+        }
+      }
+      if (foundFinished) {
         #ifdef DEBUGV3
           std::cout<<" was already processed.\n";
         #endif
@@ -198,85 +164,75 @@ std::vector<long double> Brain::output(const std::vector<long double>& x) {
         #ifdef DEBUGV3
           std::cout<<" was not processed yet";
         #endif
-        //look if we can find the current neuron as target neuron in the connections list
-        //(the next character is ",i")
-        std::size_t posCNeur = 0; //connections.find(strCNeur+",i");
-        if (posCNeur==std::string::npos) {
-          #ifdef DEBUGV1
-            std::cout<<" and could not be found as target in string connections. Skip.\n";
-          #endif
-          calculateCNeur = false;
-        } else {
-          #ifdef DEBUGV3
-            std::cout<<" and is at position "<<posCNeur<<" in string connections.\n";
-          #endif
-          //which neurons are connected to the inputs of current neuron?
-          #ifdef DEBUGV2
-            std::cout<<"the inputs of neuron "<<strCNeur<<" are connected to "<<getConnectedNeuron(&neuron[n],-1)<<"\n";
-          #endif
-          //are they in the finished list?
-          //if one or more are not in the finished list, skip the current neuron and calculate it later
-          for (int j=0; j<neuron[n].numberOfInputs(); j++) {
-            std::string strConnected = getConnectedNeuron(&neuron[n],j);
-            std::size_t posConnected = finishedNeurons.find(strConnected);
-            if (posConnected==std::string::npos) {
-              #ifdef DEBUGV3
-                std::cout<<"neuron "<<strConnected<<", to which current neuron "<<strCNeur<<", is connected was not processed yet. Skip current neuron.\n";
-              #endif
-              //skip the following calculation and...
-              calculateCNeur = false;
-              //... skip the loop
-              j=neuron[n].numberOfInputs()+1;
+        //which neurons are connected to the inputs of current neuron?
+        //are they in the finished list?
+        //if one or more are not in the finished list, skip the current neuron and calculate it later
+        for (int j=0; j<neuron[n].numberOfInputs(); j++) {
+          int nConnected = getConnectedNeuron(&neuron[n],j);
+          //std::size_t posConnected = finishedNeurons.find(strConnected);
+          bool foundConnected = false;
+          for(int m=0; m<numberOfFinishedNeurons; m++) {
+            if(finishedNeurons[m]==nConnected) {
+              foundConnected = true;
+              m = numberOfFinishedNeurons; // escape the for-loop
             }
           }
-          if (calculateCNeur) {
+          
+          if (!foundConnected) {
             #ifdef DEBUGV3
-              std::cout<<"now we can finally calculate the output of neuron "<<strCNeur<<"\n";
+              std::cout<<"neuron "<<nConnected<<", to which current neuron "<<nCNeur<<" is connected, was not processed yet. Skip current neuron.\n";
             #endif
+            //skip the following calculation and...
+            calculateCNeur = false;
+            //... skip the loop
+            j=neuron[n].numberOfInputs()+1;
+          }
+        }
+        
+        if (calculateCNeur) {
+          #ifdef DEBUGV3
+            std::cout<<"now we can finally calculate the output of neuron "<<nCNeur<<"\n";
+          #endif
             
-            //erase the temporary input vector
-            intemp.clear();
-            //erase the temporary output vector
-            outtemp.clear();
+          //erase the temporary input vector
+          intemp.clear();
+          //erase the temporary output vector
+          outtemp.clear();
             
-            //where does the connected neuron occur in the finished list?
-            // -> this number tells us where to find the output of the connected neuron in vector out
-            for (int k=0; k<neuron[n].numberOfInputs(); k++) {
-              std::size_t posInFinished = finishedNeurons.find(getConnectedNeuron(&neuron[n],k));
-              if (posInFinished!=std::string::npos) {
-                //count the colons that occur till connected neuron occurs
-                std::string strSubFinished;
-                strSubFinished = finishedNeurons.substr(0,posInFinished);
-                #ifdef DEBUGV3
-                  std::cout<<"string till connected neuron "<<getConnectedNeuron(&neuron[n],k)<<": "<<strSubFinished<<"\n";
-                #endif
-                std::size_t nOccur = std::count(strSubFinished.begin(), strSubFinished.end(), ',');
-                #ifdef DEBUGV3
-                  std::cout<<"colon occurs "<<nOccur<<" times.\n";
-                #endif
-                int indexOfOutput = nameToInt(getConnectedOutput(&neuron[n],k));
+          //where does the connected neuron occur in the finished list?
+          // -> this number tells us where to find the output of the connected neuron in vector out
+          for (int k=0; k<neuron[n].numberOfInputs(); k++) {
+            int posInFinished;
+            bool foundConnected;
+            for(int m=0; m<numberOfFinishedNeurons; m++) {
+              if(finishedNeurons[m]==getConnectedNeuron(&neuron[n],k)) {
+                posInFinished = m;
+                foundConnected = true;
+                int indexOfOutput = getConnectedOutput(&neuron[n],k);
                 //build the input vector that is later returned to current neuron:
-                intemp.push_back(out[nOccur][indexOfOutput]);
+                intemp.push_back(out[posInFinished][indexOfOutput]);
+                m = numberOfFinishedNeurons; // escape the for-loop
               }
             }
-            //calculate te output of current neuron and store it in outtemp
-            #ifdef DEBUGV2
-              for (int l=0; l<neuron[n].numberOfInputs(); l++) {
-                std::cout<<"input of current neuron "<<strCNeur<<": "<<intemp[l]<<"\n";
-              }
-            #endif
-            outtemp = neuron[n].calculateOutput(intemp);
-            #ifdef DEBUGV2
-              for (int l=0; l<neuron[n].numberOfOutputs(); l++) {
-                std::cout<<"output of current neuron: "<<outtemp[l]<<"\n";
-              }
-            #endif
-            out.push_back(outtemp);
-            
-            //put the calculated neuron on the finished list
-            finishedNeurons += neuron[n].getNeuronName() + ", ";
-            numberOfFinishedNeurons++;
           }
+          
+          //calculate te output of current neuron and store it in outtemp
+          #ifdef DEBUGV2
+            for (int l=0; l<neuron[n].numberOfInputs(); l++) {
+              std::cout<<"input of current neuron "<<nCNeur<<": "<<intemp[l]<<"\n";
+            }
+          #endif
+          outtemp = neuron[n].calculateOutput(intemp);
+          #ifdef DEBUGV2
+            for (int l=0; l<neuron[n].numberOfOutputs(); l++) {
+              std::cout<<"output of current neuron: "<<outtemp[l]<<"\n";
+            }
+          #endif
+          out.push_back(outtemp);
+         
+          //put the calculated neuron on the finished list
+          finishedNeurons.push_back(neuron[n].getIdentifier());
+          numberOfFinishedNeurons++;
         }
       }
     }
@@ -291,12 +247,17 @@ std::vector<long double> Brain::output(const std::vector<long double>& x) {
 
   //this is more or less the same code as for the active neurons
   //TODO: simplify and shorten this!
-  //at last, go through the neurons in the outputlayer:
+  //at least, go through the neurons in the outputlayer:
   for (int n=0; n<noutputs; n++) {
-    std::string strCNeur = outputLayer[n].getNeuronName();
+    int nCNeur = outputLayer[n].getIdentifier();
     #ifdef DEBUGV2
-      std::cout<<"calculate the output of neurons in the outputLayer "<<strCNeur<<"\n";
+      std::cout<<"calculate the output of neurons in the outputLayer o"<<nCNeur<<"\n";
     #endif
+    
+    //erase the temporary input vector
+    intemp.clear();
+    //erase the temporary output vector
+    outtemp.clear();
     
     //erase the temporary input vector
     intemp.clear();
@@ -306,94 +267,64 @@ std::vector<long double> Brain::output(const std::vector<long double>& x) {
     //where does the connected neuron occur in the finished list?
     // -> this number tells us where to find the output of the connected neuron in vector out
     for (int k=0; k<outputLayer[n].numberOfInputs(); k++) {
-      std::size_t posInFinished = finishedNeurons.find(getConnectedNeuron(&outputLayer[n],k));
-      if (posInFinished!=std::string::npos) {
-        //count the colons that occur till connected neuron occurs
-        std::string strSubFinished;
-        strSubFinished = finishedNeurons.substr(0,posInFinished);
-        #ifdef DEBUGV3
-          std::cout<<"string till connected neuron "<<getConnectedNeuron(&outputLayer[n],k)<<": "<<strSubFinished<<"\n";
-        #endif
-        std::size_t nOccur = std::count(strSubFinished.begin(), strSubFinished.end(), ',');
-        #ifdef DEBUGV3
-          std::cout<<"colon occurs "<<nOccur<<" times.\n";
-        #endif
-        int indexOfOutput = nameToInt(getConnectedOutput(&outputLayer[n],k));
-        #ifdef DEBUGV3
-          std::cout<<"indices where to look in matrix out: ("<<nOccur<<","<<indexOfOutput<<")\n";
-          std::cout<<"matrix out: "<<out[nOccur][indexOfOutput]<<"\n";
-        #endif
-        //build the input vector that is later returned to current neuron:
-        intemp.push_back(out[nOccur][indexOfOutput]);
+      int posInFinished;
+      bool foundConnected;
+      for(int m=0; m<numberOfFinishedNeurons; m++) {
+        if(finishedNeurons[m]==getConnectedNeuron(&outputLayer[n],k)) {
+          posInFinished = m;
+          foundConnected = true;
+          int indexOfOutput = getConnectedOutput(&outputLayer[n],k);
+          //build the input vector that is later returned to current neuron:
+          intemp.push_back(out[posInFinished][indexOfOutput]);
+          m = numberOfFinishedNeurons; // escape the for-loop
+        }
       }
     }
-    //calculate the output of current neuron and store it in outtemp
+    
+    //calculate te output of current neuron and store it in outtemp
     #ifdef DEBUGV2
-      for (int l=0; l<outputLayer[n].numberOfInputs(); l++) {
-        std::cout<<"input of current neuron "<<strCNeur<<": "<<intemp[l]<<"\n";
-      }
+    for (int l=0; l<outputLayer[n].numberOfInputs(); l++) {
+      std::cout<<"input of current neuron "<<nCNeur<<": "<<intemp[l]<<"\n";
+    }
     #endif
     outtemp = outputLayer[n].calculateOutput(intemp);
     #ifdef DEBUGV2
-      for (int l=0; l<outputLayer[n].numberOfOutputs(); l++) {
-        std::cout<<"output of current neuron "<<strCNeur<<": "<<outtemp[l]<<"\n";
-      }
+    for (int l=0; l<outputLayer[n].numberOfOutputs(); l++) {
+      std::cout<<"output of current neuron: "<<outtemp[l]<<"\n";
+    }
     #endif
     totalOut.push_back(outtemp[0]);
     
     //put the calculated neuron on the finished list
-    finishedNeurons += outputLayer[n].getNeuronName() + ", ";
+    finishedNeurons.push_back(outputLayer[n].getIdentifier());
     numberOfFinishedNeurons++;
   }
   
   #ifdef DEBUGV2
     std::cout<<"total number of neurons: "<<nneurons+ninputs<<"\n";
     std::cout<<"number of finished neurons: "<<numberOfFinishedNeurons<<"\n";
-    std::cout<<"finished neurons: "<<finishedNeurons<<"\n";
+    std::cout<<"finished neurons:\n";
+    for (int m=0; m<numberOfFinishedNeurons; m++) {
+      std::cout<<finishedNeurons[m]<<"\n";
+    }
   #endif
   
   return totalOut;
 }
 
-std::string Brain::getConnectedNeuron(Neuron *neur, int iinput){
+int Brain::getConnectedNeuron(Neuron *neur, int iinput){
   
   //check if iinput was set correctly
   if (iinput >= (neur->numberOfInputs())) {
     std::cout<<"\nError: iinput is to large: "<<iinput<<"\n";
     exit(1);
   }
-  
-  //if iinput is negative, return all neurons that are conected to this neuron
-  if (iinput<0) {
-    std::string strNeurons = "";
-    for (int i=0; i<neur->numberOfInputs(); i++) {
-    strNeurons += neur->getConnectedNeuron(i);
-    }
-    return strNeurons;
-  }
 
   return neur->getConnectedNeuron(iinput);
 }
 
-std::string Brain::getConnectedOutput(Neuron *neur, int iinput) {
+int Brain::getConnectedOutput(Neuron *neur, int iinput) {
   return neur->getConnectedOutput(iinput);
-}
-
-//TODO: diese Funktion optimieren! Am besten gar nicht mit strings arbeiten
-//sondern nur noch mit integers.
-int Brain::nameToInt(std::string name){
-  std::string temp;
-  int a;
-  
-  temp = name;
-  temp.erase(0,1);
-
-  std::istringstream(temp) >> a;
- 
-  #ifdef DEBUGV3
-    std::cout<<"a: "<<a<<" temp: "<<temp<<"\n";
-  #endif
-  return a;
 }
 
 int Brain::numberOfInputs() {

@@ -16,11 +16,9 @@ class Brain {
     //connects output of neur1 with input of neuron neur2
     void connectNeurons(Neuron *neur1, int output, Neuron *neur2, int input);
     //extract the neuron that is connected on input iinput of neuron neur
-    std::string getConnectedNeuron(Neuron *neur, int iinput);
+    int getConnectedNeuron(Neuron *neur, int iinput);
     //extract the output of the neuron that is connected on input iinput of neuron neur
-    std::string getConnectedOutput(Neuron *neur, int iinput);
-    //takes neuron name, input or output name and returns integer (example: n0 -> 0, i1 -> 1, o2 -> 2)
-    int nameToInt(std::string name);
+    int getConnectedOutput(Neuron *neur, int iinput);
     
     //return the number of inputs, outputs and neurons
     int numberOfInputs();
@@ -51,15 +49,7 @@ class Brain {
     std::vector<Neuron> inputLayer;
     std::vector<Neuron> outputLayer;
     //vector of connections, whose entries points to the next input iinput of neuron ineur
-    std::string connections;
-   
-    
-    //store here for a given neuron identifier and given input number the
-    //identifier of the connected neuron
-    //std::vector< std::vector<std::string> > connectedNeurons;
-    //store here for a given neuron identifier and given input number the
-    //number of the connected output
-    //std::vector< std::vector<std::string> > connectedOutputs;
+    std::vector< std::vector<int> > connections;
 };
 
 #endif
