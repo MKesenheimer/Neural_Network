@@ -1,10 +1,12 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include "Main.h"
 #include "Brain.h"
 #include "Trainer.h"
 #include "Neuron.h"
 #include "Helper.h"
+#include "Interface.h"
 
 using namespace::std;
 
@@ -14,12 +16,20 @@ int main()
   cout << "           Simple Neuronal Network            \n";
   cout << "==============================================\n\n";
   
+  //write all data to a file
+  //ofstream ofile;
+  //ofile.open("brain.dat");
+  //ofile << "Writing this to a file.\n";
+  //ofile.close();
+  
+  Interface fileAcces("brain.dat");
+
   //the number of active neurons
-  int nneurons = 15;
+  int nneurons = fileAcces.readInput("nneurons");
   //the number of input values
-  int ninputs = 4;
+  int ninputs = fileAcces.readInput("ninputs");
   //the number of output values
-  int noutputs = 2;
+  int noutputs = fileAcces.readInput("noutputs");
   
   //accuracy of the desired output
   long double accuracy = 0.001;
@@ -32,53 +42,18 @@ int main()
   Trainer TonyStark(learningRate,accuracy);
   
   //store the demanded input and the desired output
-  std::vector<long double> demandedInput;
-  std::vector<long double> desiredOutput;
+  std::vector< std::vector<long double> > dataSets;
+  int nsets = fileAcces.readInput("nsets");
+  dataSets = fileAcces.readDataSets();
   
-  //set up the dataset
-  //set 1
-  demandedInput.clear();
-  desiredOutput.clear();
-  demandedInput.push_back(1);
-  demandedInput.push_back(0);
-  demandedInput.push_back(0);
-  demandedInput.push_back(0);
-  desiredOutput.push_back(0);
-  desiredOutput.push_back(0);
-  TonyStark.addDataSet(demandedInput,desiredOutput);
-  //set 2
-  demandedInput.clear();
-  desiredOutput.clear();
-  demandedInput.push_back(0);
-  demandedInput.push_back(1);
-  demandedInput.push_back(0);
-  demandedInput.push_back(0);
-  desiredOutput.push_back(1);
-  desiredOutput.push_back(0);
-  TonyStark.addDataSet(demandedInput,desiredOutput);
-  //set 3
-  demandedInput.clear();
-  desiredOutput.clear();
-  demandedInput.push_back(0);
-  demandedInput.push_back(0);
-  demandedInput.push_back(1);
-  demandedInput.push_back(0);
-  desiredOutput.push_back(0);
-  desiredOutput.push_back(1);
-  TonyStark.addDataSet(demandedInput,desiredOutput);
-  //set 4
-  demandedInput.clear();
-  desiredOutput.clear();
-  demandedInput.push_back(0);
-  demandedInput.push_back(0);
-  demandedInput.push_back(0);
-  demandedInput.push_back(1);
-  desiredOutput.push_back(1);
-  desiredOutput.push_back(1);
-  TonyStark.addDataSet(demandedInput,desiredOutput);
+  //set up the datasets
+  for (int i = 0; i < 2*nsets; i += 2) {
+    TonyStark.addDataSet(dataSets[i],dataSets[i+1]);
+  }
   
   //now all the data is provided, train the brain
   TonyStark.train(&Jarvis);
+  
   
   cout << "\n\n=> Testing the brain:\n";
   
@@ -87,69 +62,18 @@ int main()
   vector<long double> output;
   
   //we can now test the brain
-  //test 1
-  input.clear();
-  input.push_back(1);
-  input.push_back(0);
-  input.push_back(0);
-  input.push_back(0);
-  for (int i=0; i<input.size(); i++) {
-    cout << "\tJarvis input "<<i<<":\t\t"<< input[i] << "\n";
+  for (int j=0; j<2*nsets; j += 2) {
+    input = dataSets[j];
+    for (int i=0; i<input.size(); i++) {
+      cout << "\tJarvis input "<<i<<":\t\t"<< input[i] << "\n";
+    }
+    //calculate the output
+    output = Jarvis.output(input);
+    for (int i=0; i<output.size(); i++) {
+      cout << "\tJarvis output "<<i<<":\t"<< output[i] << "\n";
+    }
+    cout<<endl;
   }
-  //calculate the output
-  output = Jarvis.output(input);
-  for (int i=0; i<output.size(); i++) {
-    cout << "\tJarvis output "<<i<<":\t"<<output[i] << "\n";
-  }
-  cout<<endl;
-  
-  //test 2
-  input.clear();
-  input.push_back(0);
-  input.push_back(1);
-  input.push_back(0);
-  input.push_back(0);
-  for (int i=0; i<input.size(); i++) {
-    cout << "\tJarvis input "<<i<<":\t\t"<< input[i] << "\n";
-  }
-  //calculate the output
-  output = Jarvis.output(input);
-  for (int i=0; i<output.size(); i++) {
-    cout << "\tJarvis output "<<i<<":\t"<<output[i] << "\n";
-  }
-  cout<<endl;
-  
-  //test 3
-  input.clear();
-  input.push_back(0);
-  input.push_back(0);
-  input.push_back(1);
-  input.push_back(0);
-  for (int i=0; i<input.size(); i++) {
-    cout << "\tJarvis input "<<i<<":\t\t"<< input[i] << "\n";
-  }
-  //calculate the output
-  output = Jarvis.output(input);
-  for (int i=0; i<output.size(); i++) {
-    cout << "\tJarvis output "<<i<<":\t"<<output[i] << "\n";
-  }
-  cout<<endl;
-  
-  //test 4
-  input.clear();
-  input.push_back(0);
-  input.push_back(0);
-  input.push_back(0);
-  input.push_back(1);
-  for (int i=0; i<input.size(); i++) {
-    cout << "\tJarvis input "<<i<<":\t\t"<< input[i] << "\n";
-  }
-  //calculate the output
-  output = Jarvis.output(input);
-  for (int i=0; i<output.size(); i++) {
-    cout << "\tJarvis output "<<i<<":\t"<<output[i] << "\n";
-  }
-  cout<<endl;
   
   return 0;
 }

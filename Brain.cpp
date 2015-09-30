@@ -106,7 +106,7 @@ std::vector<long double> Brain::output(const std::vector<long double>& x) {
    *   an welchem Speicherplatz im vector out die Eingabewerte liegen.
    */
    
-  //TODO: prüfe ob die größe des übergebenen vectors x der Anzahl der Neuronen im inputLayer entspricht
+  //TODO: prüfe ob die Größe des übergebenen vectors x der Anzahl der Neuronen im inputLayer entspricht
   //überprüfe außerdem ob alle neuronen im inputLayer und outputLayer verbunden sind
   
   //in matrix out[i][output] are stored vectors of outputs of calculated neurons with index i
@@ -143,7 +143,7 @@ std::vector<long double> Brain::output(const std::vector<long double>& x) {
       bool calculateCNeur = true;
       //name of current neuron
       int nCNeur = neuron[n].getIdentifier();
-      #ifdef DEBUGV2
+      #ifdef DEBUGV3
         std::cout<<"current neuron "<<nCNeur<<"\n";
       #endif
       //is current neuron in the finishedNeurons list?

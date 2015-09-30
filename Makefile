@@ -52,7 +52,7 @@ FRM =
 ## Linker files
 
 ### USER Files ###
-USER = Main.a Neuron.a Brain.a Trainer.a Helper.a
+USER = Main.a Neuron.a Brain.a Trainer.a Helper.a Interface.a
 
 
 ########################################################################
