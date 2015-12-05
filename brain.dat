@@ -2,7 +2,7 @@
 nneurons 15
 ninputs 4
 noutputs 2
-nsets 4
+nsets 5
 
 set1_in 1 0 0 0
 set1_out 0 0
@@ -15,3 +15,6 @@ set3_out 1 0
 
 set4_in 0 0 0 1
 set4_out 1 1
+
+set5_in 1 0 0 1
+set5_out 0 1
